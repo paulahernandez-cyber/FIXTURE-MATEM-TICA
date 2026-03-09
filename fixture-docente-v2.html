@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👩‍🏫 Panel Docente — Fixture Matemático</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f7ff;--white:#fff;--blue:#2563eb;--blue-l:#dbeafe;--blue-d:#1d4ed8;
+  --green:#16a34a;--green-l:#dcfce7;--gold:#d97706;--gold-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;--purple:#7c3aed;--purple-l:#ede9fe;
+  --orange:#ea580c;--orange-l:#ffedd5;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── LOGIN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;}
+.login-box{background:var(--white);border-radius:20px;padding:2.5rem 2rem;max-width:360px;width:100%;
+  text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.1);}
+.login-box h1{font-family:'Fredoka One',cursive;font-size:1.8rem;color:var(--blue);margin-bottom:.3rem;}
+.login-box p{color:var(--muted);font-size:.88rem;margin-bottom:1.5rem;}
+.l-input{width:100%;border:2px solid var(--border);border-radius:10px;padding:.7rem 1rem;
+  font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;outline:none;
+  transition:border-color .2s;margin-bottom:.8rem;}
+.l-input:focus{border-color:var(--blue);}
+.l-btn{width:100%;padding:.7rem;border-radius:12px;border:none;background:var(--blue);
+  color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;}
+.l-btn:hover{background:var(--blue-d);}
+.l-err{color:var(--red);font-size:.82rem;font-weight:700;margin-top:.5rem;display:none;}
+
+/* ── APP ── */
+#appScreen{display:none;flex-direction:column;min-height:100vh;}
+#appScreen.active{display:flex;}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,#1d4ed8,#7c3aed);padding:1rem 1.5rem;
+  display:flex;align-items:center;gap:1rem;flex-shrink:0;}
+header h1{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;flex:1;}
+.live-badge{display:flex;align-items:center;gap:.4rem;background:rgba(255,255,255,.15);
+  border-radius:999px;padding:.28rem .75rem;font-size:.73rem;font-weight:800;color:#fff;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hdr-btn{background:rgba(255,255,255,.15);border:none;border-radius:8px;color:#fff;
+  padding:.32rem .75rem;font-family:'Nunito',sans-serif;font-weight:800;font-size:.75rem;cursor:pointer;}
+.hdr-btn:hover{background:rgba(255,255,255,.25);}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;background:#fff;border-bottom:2px solid var(--border);flex-shrink:0;overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:.75rem 1.2rem;border:none;background:transparent;
+  color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;
+  cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
+.tab:hover{color:var(--blue);}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+.tab-content{display:none;flex:1;overflow-y:auto;}
+.tab-content.active{display:block;}
+
+/* ── STUDENTS TAB ── */
+#tabStudents{padding:1.5rem;max-width:1100px;margin:0 auto;}
+
+.stats-bar{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem;padding:1rem;
+  background:var(--white);border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.stat-pill{display:flex;align-items:center;gap:.4rem;}
+.sn{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--blue);}
+.sl{font-size:.72rem;font-weight:700;color:var(--muted);}
+
+.filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center;}
+.filter-bar input{flex:1;min-width:160px;border:2px solid var(--border);border-radius:10px;
+  padding:.48rem .8rem;font-family:'Nunito',sans-serif;font-size:.83rem;font-weight:700;outline:none;}
+.filter-bar input:focus{border-color:var(--blue);}
+.f-btn{padding:.42rem .85rem;border-radius:8px;border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;
+  font-size:.76rem;cursor:pointer;transition:all .2s;}
+.f-btn.active,.f-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l);}
+
+.students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:.9rem;}
+.student-card{background:var(--white);border:2px solid var(--border);border-radius:16px;
+  padding:1rem;cursor:pointer;transition:all .2s;}
+.student-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(37,99,235,.1);}
+.student-card.ahead{border-color:rgba(22,163,74,.35);}
+.student-card.behind{border-color:rgba(220,38,38,.25);}
+.sc-top{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem;}
+.sc-av{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.sc-name{font-weight:900;font-size:.9rem;flex:1;}
+.sc-last{font-size:.66rem;color:var(--muted);font-weight:700;}
+.sc-phase{font-size:.7rem;font-weight:800;padding:.16rem .5rem;border-radius:999px;flex-shrink:0;}
+.sc-bar-wrap{background:#f1f5f9;border-radius:999px;height:7px;overflow:hidden;margin:.4rem 0;}
+.sc-bar-fill{height:100%;border-radius:999px;transition:width .5s;}
+.sc-cats{display:flex;flex-wrap:wrap;gap:.25rem;margin-top:.5rem;}
+.sc-cat{font-size:.65rem;font-weight:800;padding:.12rem .45rem;border-radius:6px;}
+.sc-cat.done{background:var(--green-l);color:var(--green);}
+.sc-cat.partial{background:var(--gold-l);color:var(--gold);}
+.sc-cat.todo{background:#f1f5f9;color:var(--muted);}
+
+/* ── BRACKET TAB ── */
+#tabBracket{padding:1.5rem .5rem 3rem;overflow-x:auto;}
+.bracket-scroll{min-width:820px;max-width:1060px;margin:0 auto;padding:0 1rem;}
+.bracket-row{display:flex;align-items:stretch;}
+.round-col{flex:1;display:flex;flex-direction:column;}
+.round-label{text-align:center;margin-bottom:.8rem;}
+.round-label span{font-family:'Fredoka One',cursive;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);border:1px solid var(--border);
+  border-radius:999px;padding:.2rem .75rem;display:inline-block;}
+.matches-list{display:flex;flex-direction:column;flex:1;}
+.match-block{display:flex;flex-direction:column;justify-content:center;flex:1;padding:.15rem 0;}
+.match-pair{display:flex;flex-direction:column;gap:3px;padding:0 6px;}
+.b-card{background:var(--white);border:2px solid var(--border);border-radius:10px;
+  padding:.45rem .65rem;font-size:.75rem;font-weight:800;display:flex;align-items:center;
+  gap:.35rem;min-height:38px;}
+.b-card.done-cat{border-color:rgba(22,163,74,.4);background:var(--green-l);}
+.b-card.in-prog{border-color:rgba(37,99,235,.35);background:var(--blue-l);}
+.b-icon{font-size:.95rem;flex-shrink:0;}
+.b-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);}
+.b-pct{font-size:.65rem;font-weight:900;padding:0 4px;border-radius:4px;flex-shrink:0;}
+.conn-col{width:18px;flex-shrink:0;}
+.champ-col{flex:0 0 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 .4rem;}
+.champ-trophy{font-size:2.8rem;margin-bottom:.5rem;filter:drop-shadow(0 0 12px rgba(245,158,11,.8));}
+.champ-box{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px solid #f59e0b;
+  border-radius:14px;padding:.8rem .7rem;text-align:center;width:100%;
+  box-shadow:0 0 20px rgba(245,158,11,.25);}
+.champ-lbl{font-family:'Fredoka One',cursive;font-size:.58rem;letter-spacing:.15em;
+  text-transform:uppercase;color:#d97706;margin-bottom:.3rem;}
+.champ-name{font-weight:900;font-size:.82rem;color:#92400e;min-height:1.2em;}
+
+/* ── EDITOR TAB ── */
+#tabEditor{padding:1.5rem;max-width:960px;margin:0 auto;}
+.editor-notice{background:var(--blue-l);border:1.5px solid rgba(37,99,235,.25);border-radius:12px;
+  padding:.8rem 1rem;margin-bottom:1.5rem;font-size:.82rem;color:var(--blue-d);font-weight:700;}
+.editor-notice strong{display:block;margin-bottom:.2rem;}
+
+/* Phase selector */
+.ed-phase-nav{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.ep-btn{padding:.4rem .9rem;border-radius:999px;border:2px solid var(--border);
+  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;
+  font-weight:800;font-size:.78rem;cursor:pointer;transition:all .2s;}
+.ep-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.ep-btn:hover:not(.active){border-color:var(--blue);color:var(--blue);}
+
+.ed-cats{display:flex;flex-direction:column;gap:1.2rem;}
+.ed-cat-block{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:1.1rem;}
+.ed-cat-title{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--blue);margin-bottom:.9rem;
+  display:flex;align-items:center;gap:.5rem;}
+
+/* inline fields */
+.field-row{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:flex-start;flex-wrap:wrap;}
+.field-row label{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);width:100%;display:block;margin-bottom:.2rem;}
+.f-group{display:flex;flex-direction:column;flex:1;min-width:120px;}
+.f-inp,.f-sel,.f-ta{border:1.5px solid var(--border);border-radius:8px;
+  font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;padding:.38rem .6rem;
+  outline:none;width:100%;transition:border-color .2s;background:var(--white);color:var(--text);}
+.f-inp:focus,.f-sel:focus,.f-ta:focus{border-color:var(--blue);}
+.f-ta{resize:vertical;min-height:42px;}
+
+.theory-section{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;
+  padding:.7rem .9rem;margin-bottom:.8rem;}
+.theory-section h4{font-size:.75rem;font-weight:900;color:var(--gold);margin-bottom:.5rem;}
+.theory-item{display:flex;gap:.4rem;margin-bottom:.35rem;align-items:center;}
+.theory-item input{flex:1;border:1.5px solid var(--border);border-radius:7px;
+  font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:700;padding:.32rem .55rem;outline:none;}
+.theory-item input:focus{border-color:var(--blue);}
+
+.act-section{border-top:1px solid var(--border);padding-top:.8rem;margin-top:.5rem;}
+.act-section h4{font-size:.75rem;font-weight:900;color:var(--muted);margin-bottom:.6rem;}
+.act-block{background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;
+  padding:.7rem .8rem;margin-bottom:.5rem;}
+.act-block-title{font-size:.75rem;font-weight:900;color:var(--blue);margin-bottom:.5rem;}
+
+.save-bar{position:sticky;bottom:0;background:var(--white);border-top:2px solid var(--border);
+  padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:50;}
+.save-btn{padding:.6rem 1.8rem;border-radius:12px;border:none;background:var(--blue);
+  color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;transition:all .2s;}
+.save-btn:hover{background:var(--blue-d);transform:translateY(-1px);}
+.save-info{font-size:.78rem;font-weight:700;color:var(--muted);}
+
+/* DETAIL */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:1rem;}
+.detail-overlay.open{display:flex;}
+.detail-panel{background:var(--white);border-radius:20px;max-width:540px;width:100%;
+  max-height:90vh;overflow-y:auto;padding:1.5rem;animation:slideUp .3s ease;}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
+.dp-close{float:right;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);}
+.dp-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--blue);margin-bottom:.2rem;}
+.dp-meta{color:var(--muted);font-size:.8rem;font-weight:700;margin-bottom:1rem;}
+.dp-phase{margin-bottom:.9rem;}
+.dp-ph-title{font-weight:900;font-size:.85rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.4rem;}
+.dp-bar{background:#f1f5f9;border-radius:999px;height:6px;overflow:hidden;margin-bottom:.3rem;}
+.dp-bar-fill{height:100%;border-radius:999px;}
+.dp-acts{display:flex;flex-direction:column;gap:.25rem;margin-top:.4rem;}
+.dp-act{display:flex;align-items:center;gap:.4rem;font-size:.76rem;font-weight:700;
+  padding:.28rem .5rem;border-radius:7px;background:#f8fafc;}
+.dp-act.done{background:var(--green-l);color:var(--green);}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  background:var(--green);color:#fff;font-weight:900;padding:.55rem 1.4rem;
+  border-radius:999px;font-size:.88rem;opacity:0;transition:opacity .3s;z-index:9999;pointer-events:none;}
+.toast.show{opacity:1;}
+
+@media(max-width:600px){.students-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:2.5rem;margin-bottom:.5rem">👩‍🏫</div>
+    <h1>Panel Docente</h1>
+    <p>Acceso exclusivo para la maestra</p>
+    <input class="l-input" type="password" id="passInput" placeholder="Contraseña"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="l-btn" onclick="doLogin()">Ingresar</button>
+    <div class="l-err" id="loginErr">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen">
+  <header>
+    <h1>👩‍🏫 Panel Docente — Fixture Matemático</h1>
+    <div class="live-badge"><div class="live-dot"></div>En vivo</div>
+    <button class="hdr-btn" onclick="doLogout()">Salir</button>
+  </header>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('Students')">👥 Alumnos</button>
+    <button class="tab" onclick="switchTab('Bracket')">🏆 Bracket</button>
+    <button class="tab" onclick="switchTab('Editor')">✏️ Editar contenido</button>
+  </div>
+  <div class="tab-content active" id="tabStudents"></div>
+  <div class="tab-content" id="tabBracket"></div>
+  <div class="tab-content" id="tabEditor"></div>
+</div>
+
+<!-- DETAIL -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, collection, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDrtAx6wC307Dy8JcqwWL25MHJ_6rfSQSs",
+  authDomain: "fixture-fd586.firebaseapp.com",
+  projectId: "fixture-fd586",
+  storageBucket: "fixture-fd586.firebasestorage.app",
+  messagingSenderId: "877771262749",
+  appId: "1:877771262749:web:db2142b76393b7db67eff4"
+};
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// ══════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════
+const TEACHER_PASS = "maestra2025"; // ← CAMBIÁ ESTA CONTRASEÑA
+const PHASE_COLORS = ['#2563eb','#d97706','#7c3aed','#d97706'];
+const ROUND_NAMES  = ['Octavos','Cuartos','Semifinal','Final'];
+const TLABELS = {actividad:'Actividad',video:'Video',juego:'Juego',apunte:'Apunte'};
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let FIXTURE = null;
+let allStudents = [];
+let editorPhase = 0;
+let unsub = null;
+
+// ══════════════════════════════════
+// DEFAULT FIXTURE
+// ══════════════════════════════════
+function defaultFixture(){
+  const makePhase=(id,name,emoji,cats)=>({id,name,emoji,categories:cats});
+  const makeCat=(id,name,icon,acts)=>({id,name,icon,
+    theory:[{label:'Video explicativo',url:''},{label:'Apunte PDF',url:''}],
+    activities:acts.map((n,i)=>({id:`${id}_a${i+1}`,name:n,type:i===2?'video':i===3?'juego':'actividad',desc:'',link:'',deadline:''}))
+  });
+  return {phases:[
+    makePhase('octavos','Octavos de Final','🌱',[
+      makeCat('cat1','Números Naturales','🔢',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat2','Suma y Resta','➕',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat3','Multiplicación','✖️',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat4','División','➗',['Actividad 1','Actividad 2','Video','Juego']),
+    ]),
+    makePhase('cuartos','Cuartos de Final','🔥',[
+      makeCat('cat5','Fracciones','🍕',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat6','Geometría','📐',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat7','Medidas','📏',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat8','Números Decimales','💯',['Actividad 1','Actividad 2','Video','Juego']),
+    ]),
+    makePhase('semis','Semifinal','⚡',[
+      makeCat('cat9','Estadística','📊',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat10','Problemas Mixtos','🧩',['Actividad 1','Actividad 2','Actividad 3','Desafío extra']),
+      makeCat('cat11','Tiempo y Calendario','📅',['Actividad 1','Actividad 2','Video','Juego']),
+      makeCat('cat12','Números Romanos','🏛️',['Actividad 1','Actividad 2','Video','Juego']),
+    ]),
+    makePhase('final','¡La Gran Final!','🏆',[
+      makeCat('cat13','Desafío Final 1','🌟',['Desafío 1','Desafío 2','Desafío 3','Desafío 4']),
+      makeCat('cat14','Desafío Final 2','🔥',['Desafío 1','Desafío 2','Desafío 3','Desafío 4']),
+      makeCat('cat15','Desafío Final 3','⚡',['Desafío 1','Desafío 2','Desafío 3','Desafío 4']),
+      makeCat('cat16','Desafío Final 4','🏆',['Desafío 1','Desafío 2','Desafío 3','Desafío 4']),
+    ]),
+  ]};
+}
+
+// ══════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════
+async function loadFixture(){
+  try{
+    const snap=await getDoc(doc(db,'_config','fixture'));
+    FIXTURE = snap.exists()&&snap.data().phases ? snap.data() : defaultFixture();
+  }catch(e){ FIXTURE=defaultFixture(); }
+}
+
+async function saveFixture(){
+  try{
+    await setDoc(doc(db,'_config','fixture'), FIXTURE);
+    showToast('✅ ¡Contenido guardado y publicado!');
+  }catch(e){ showToast('❌ Error al guardar'); }
+}
+
+function startLive(){
+  try{
+    unsub=onSnapshot(collection(db,'students'),snap=>{
+      allStudents=[];
+      snap.forEach(d=>allStudents.push({id:d.id,...d.data()}));
+      renderStudents(); updateStats();
+    });
+  }catch(e){ loadStudents(); }
+}
+
+async function loadStudents(){
+  const snap=await getDoc(doc(db,'_index','students')).catch(()=>null);
+  // fallback: iterate students manually
+  showToast('ℹ️ Cargando alumnos...');
+}
+
+// ══════════════════════════════════
+// LOGIN
+// ══════════════════════════════════
+window.doLogin=async()=>{
+  if(document.getElementById('passInput').value===TEACHER_PASS){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('appScreen').classList.add('active');
+    await loadFixture();
+    renderEditor();
+    startLive();
+    renderBracket();
+  } else {
+    document.getElementById('loginErr').style.display='block';
+  }
+};
+window.doLogout=()=>{
+  if(unsub) unsub();
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('passInput').value='';
+};
+
+// ══════════════════════════════════
+// TABS
+// ══════════════════════════════════
+window.switchTab=(id)=>{
+  const ids=['Students','Bracket','Editor'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',ids[i]===id));
+  document.querySelectorAll('.tab-content').forEach((c,i)=>c.classList.toggle('active',ids[i]===id));
+  if(id==='Bracket') renderBracket();
+};
+
+// ══════════════════════════════════
+// HELPERS
+// ══════════════════════════════════
+function totalActs(){ return FIXTURE.phases.flatMap(p=>p.categories.flatMap(c=>c.activities)).length; }
+function getPhaseProg(progress,pi){
+  const acts=FIXTURE.phases[pi].categories.flatMap(c=>c.activities);
+  const done=acts.filter(a=>progress&&progress[a.id]).length;
+  return{done,total:acts.length,pct:Math.round(done/acts.length*100)};
+}
+function getCurPhase(progress){ for(let i=FIXTURE.phases.length-1;i>=0;i--){ if(getPhaseProg(progress,i).done>0) return i; } return 0; }
+function getTotalDone(progress){ return progress?Object.values(progress).filter(v=>v).length:0; }
+function isActiveToday(ls){ if(!ls) return false; return new Date(ls).toDateString()===new Date().toDateString(); }
+function fmtLast(ls){
+  if(!ls) return 'Nunca';
+  const d=new Date(ls),now=new Date(),diff=Math.floor((now-d)/60000);
+  if(diff<1) return 'Ahora mismo';
+  if(diff<60) return `Hace ${diff}min`;
+  if(diff<1440) return `Hace ${Math.floor(diff/60)}h`;
+  return d.toLocaleDateString('es-AR');
+}
+
+// ══════════════════════════════════
+// STUDENTS
+// ══════════════════════════════════
+function updateStats(){
+  const tot=allStudents.length;
+  const active=allStudents.filter(s=>isActiveToday(s.lastSeen)).length;
+  const avg=tot?Math.round(allStudents.reduce((a,s)=>a+getTotalDone(s.progress),0)/tot/totalActs()*100):0;
+  const comp=allStudents.filter(s=>getPhaseProg(s.progress,0).pct===100).length;
+  document.getElementById('tabStudents').querySelector('.stats-bar')?.replaceWith(buildStatsBar(tot,active,avg,comp));
+}
+function buildStatsBar(tot,active,avg,comp){
+  const d=document.createElement('div'); d.className='stats-bar';
+  d.innerHTML=`
+    <div class="stat-pill"><span class="sn">${tot}</span><span class="sl">alumnos</span></div>
+    <div class="stat-pill"><span class="sn">${active}</span><span class="sl">activos hoy</span></div>
+    <div class="stat-pill"><span class="sn">${avg}%</span><span class="sl">promedio</span></div>
+    <div class="stat-pill"><span class="sn">${comp}</span><span class="sl">completaron fase 1</span></div>
+    <button class="f-btn" style="margin-left:auto" onclick="window.location.reload()">🔄 Actualizar</button>`;
+  return d;
+}
+
+let curFilter='all';
+window.setFilter=(f)=>{
+  curFilter=f;
+  document.querySelectorAll('.f-btn[data-f]').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
+  renderStudents();
+};
+
+function renderStudents(){
+  const container=document.getElementById('tabStudents');
+  const q=(document.getElementById('searchSt')?.value||'').toLowerCase();
+  const avgDone=allStudents.length?allStudents.reduce((a,s)=>a+getTotalDone(s.progress),0)/allStudents.length:0;
+  let list=allStudents.filter(s=>s.id.toLowerCase().includes(q));
+  if(curFilter==='ahead') list=list.filter(s=>getTotalDone(s.progress)>=avgDone);
+  if(curFilter==='behind') list=list.filter(s=>getTotalDone(s.progress)<avgDone&&getTotalDone(s.progress)>0);
+  list.sort((a,b)=>getTotalDone(b.progress)-getTotalDone(a.progress));
+
+  const tot=totalActs();
+  const statsBarEl=buildStatsBar(allStudents.length,
+    allStudents.filter(s=>isActiveToday(s.lastSeen)).length,
+    allStudents.length?Math.round(allStudents.reduce((a,s)=>a+getTotalDone(s.progress),0)/allStudents.length/tot*100):0,
+    allStudents.filter(s=>getPhaseProg(s.progress,0).pct===100).length
+  );
+
+  const filterBar=`<div class="filter-bar">
+    <input id="searchSt" type="text" placeholder="🔍 Buscar alumno..." oninput="renderStudents()">
+    <button class="f-btn ${curFilter==='all'?'active':''}" data-f="all" onclick="setFilter('all')">Todos</button>
+    <button class="f-btn ${curFilter==='ahead'?'active':''}" data-f="ahead" onclick="setFilter('ahead')">✅ Adelantados</button>
+    <button class="f-btn ${curFilter==='behind'?'active':''}" data-f="behind" onclick="setFilter('behind')">⚠️ Necesitan ayuda</button>
+  </div>`;
+
+  if(!list.length){
+    container.innerHTML=''; container.appendChild(statsBarEl);
+    container.insertAdjacentHTML('beforeend',filterBar+`<div style="text-align:center;padding:3rem;color:var(--muted)"><div style="font-size:2.5rem">🔍</div><p style="font-weight:700;margin-top:.5rem">No hay alumnos aún</p></div>`);
+    return;
+  }
+
+  const cards=list.map(s=>{
+    const done=getTotalDone(s.progress), pct=Math.round(done/tot*100);
+    const pi=getCurPhase(s.progress), phase=FIXTURE.phases[pi];
+    const p=s.profile||{};
+    const ahead=done>=avgDone;
+    const cats=FIXTURE.phases[pi].categories.map(cat=>{
+      const cd=cat.activities.filter(a=>s.progress&&s.progress[a.id]).length;
+      const cls=cd===cat.activities.length?'done':cd>0?'partial':'todo';
+      return `<span class="sc-cat ${cls}">${cat.icon} ${cat.name}</span>`;
+    }).join('');
+    return `<div class="student-card ${ahead?'ahead':done<avgDone&&done>0?'behind':''}" onclick="openDetail('${s.id}')">
+      <div class="sc-top">
+        <div class="sc-av" style="background:${p.color||'#dbeafe'}22;border:2px solid ${p.color||'#60a5fa'}44">${p.avatar||'🧑'}</div>
+        <div style="flex:1">
+          <div class="sc-name">${s.id}</div>
+          <div class="sc-last">${isActiveToday(s.lastSeen)?'🟢 ':''} ${fmtLast(s.lastSeen)}</div>
+        </div>
+        <span class="sc-phase" style="background:${PHASE_COLORS[pi]}18;color:${PHASE_COLORS[pi]}">${phase.emoji} ${phase.name}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:.3rem">
+        <span style="font-size:.7rem;font-weight:800;color:var(--muted)">Progreso total</span>
+        <span style="font-size:.78rem;font-weight:900;color:var(--blue)">${pct}% (${done}/${tot})</span>
+      </div>
+      <div class="sc-bar-wrap"><div class="sc-bar-fill" style="width:${pct}%;background:${PHASE_COLORS[pi]}"></div></div>
+      <div class="sc-cats">${cats}</div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML='';
+  container.appendChild(statsBarEl);
+  container.insertAdjacentHTML('beforeend',filterBar+`<div class="students-grid">${cards}</div>`);
+}
+
+// ══════════════════════════════════
+// BRACKET (teacher view — shows avg % per category)
+// ══════════════════════════════════
+function renderBracket(){
+  const SPACINGS=[0,40,130,310];
+  function avgCatPct(pi,ci){
+    if(!allStudents.length) return 0;
+    const cat=FIXTURE.phases[pi].categories[ci];
+    const tot=cat.activities.length;
+    const sum=allStudents.reduce((a,s)=>{
+      const d=cat.activities.filter(act=>s.progress&&s.progress[act.id]).length;
+      return a+Math.round(d/tot*100);
+    },0);
+    return Math.round(sum/allStudents.length);
+  }
+
+  let html=`<div class="bracket-scroll"><div class="bracket-row">`;
+  FIXTURE.phases.forEach((phase,pi)=>{
+    const color=PHASE_COLORS[pi];
+    html+=`<div class="round-col">
+      <div class="round-label"><span style="color:${color}">${phase.emoji} ${ROUND_NAMES[pi]}</span></div>
+      <div class="matches-list" style="gap:${SPACINGS[pi]}px">`;
+    phase.categories.forEach((cat,ci)=>{
+      const avg=avgCatPct(pi,ci);
+      const cls=avg===100?'b-card done-cat':avg>0?'b-card in-prog':'b-card';
+      const pctColor=avg===100?'#16a34a':avg>0?'#2563eb':'#94a3b8';
+      html+=`<div class="match-block"><div class="match-pair">
+        <div class="${cls}">
+          <span class="b-icon">${cat.icon}</span>
+          <span class="b-name">${cat.name}</span>
+          <span class="b-pct" style="color:${pctColor}">${avg}%</span>
+        </div>
+      </div></div>`;
+    });
+    html+=`</div></div>`;
+    if(pi<3) html+=`<div class="conn-col"></div>`;
+  });
+
+  const allDone=allStudents.filter(s=>getPhaseProg(s.progress,3).pct===100);
+  html+=`<div class="champ-col">
+    <div class="champ-trophy">🏆</div>
+    <div class="champ-box">
+      <div class="champ-lbl">Campeones</div>
+      <div class="champ-name">${allDone.length?allDone.map(s=>(s.profile?.avatar||'🧑')+' '+s.id).join(', '):'Nadie aún'}</div>
+    </div>
+  </div>`;
+  html+=`</div></div>`;
+  document.getElementById('tabBracket').innerHTML=html;
+}
+
+// ══════════════════════════════════
+// EDITOR
+// ══════════════════════════════════
+function renderEditor(){
+  const container=document.getElementById('tabEditor');
+  const phase=FIXTURE.phases[editorPhase];
+
+  const phaseNav=`<div class="ed-phase-nav">${FIXTURE.phases.map((p,i)=>
+    `<button class="ep-btn ${i===editorPhase?'active':''}" onclick="setEdPhase(${i})">${p.emoji} ${p.name}</button>`
+  ).join('')}</div>`;
+
+  const cats=phase.categories.map((cat,ci)=>`
+    <div class="ed-cat-block">
+      <div class="ed-cat-title">${cat.icon} ${cat.name}</div>
+
+      <div class="theory-section">
+        <h4>📚 Material Teórico</h4>
+        ${(cat.theory||[]).map((t,ti)=>`
+          <div class="theory-item">
+            <input placeholder="Nombre del material" value="${escH(t.label)}"
+              oninput="updateTheory(${editorPhase},${ci},${ti},'label',this.value)">
+            <input placeholder="Link (URL)" value="${escH(t.url)}"
+              oninput="updateTheory(${editorPhase},${ci},${ti},'url',this.value)" style="flex:2">
+          </div>`).join('')}
+      </div>
+
+      <div class="act-section">
+        <h4>✏️ Actividades</h4>
+        ${cat.activities.map((act,ai)=>`
+          <div class="act-block">
+            <div class="act-block-title">Actividad ${ai+1}</div>
+            <div class="field-row">
+              <div class="f-group" style="flex:2"><label>Nombre</label>
+                <input class="f-inp" value="${escH(act.name)}"
+                  oninput="updateAct(${editorPhase},${ci},${ai},'name',this.value)"></div>
+              <div class="f-group"><label>Tipo</label>
+                <select class="f-sel" onchange="updateAct(${editorPhase},${ci},${ai},'type',this.value)">
+                  ${['actividad','video','juego','apunte'].map(t=>
+                    `<option value="${t}"${t===act.type?' selected':''}>${TLABELS[t]}</option>`).join('')}
+                </select></div>
+            </div>
+            <div class="field-row">
+              <div class="f-group" style="flex:3"><label>Link</label>
+                <input class="f-inp" value="${escH(act.link)}" placeholder="https://..."
+                  oninput="updateAct(${editorPhase},${ci},${ai},'link',this.value)"></div>
+              <div class="f-group"><label>Fecha límite</label>
+                <input class="f-inp" type="date" value="${act.deadline||''}"
+                  oninput="updateAct(${editorPhase},${ci},${ai},'deadline',this.value)"></div>
+            </div>
+            <div class="field-row">
+              <div class="f-group"><label>Descripción</label>
+                <textarea class="f-ta" placeholder="Descripción breve..."
+                  oninput="updateAct(${editorPhase},${ci},${ai},'desc',this.value)">${escH(act.desc)}</textarea>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  container.innerHTML=`
+    <div class="editor-notice">
+      <strong>✏️ Editor de contenido</strong>
+      Completá los links, descripciones y fechas límite. Cuando termines hacé clic en "Guardar y publicar" — los alumnos verán los cambios de inmediato.
+    </div>
+    ${phaseNav}
+    <div class="ed-cats">${cats}</div>
+    <div class="save-bar">
+      <span class="save-info">Los cambios se publican al instante para todos los alumnos</span>
+      <button class="save-btn" onclick="publishFixture()">💾 Guardar y publicar</button>
+    </div>`;
+}
+
+window.setEdPhase=(i)=>{ editorPhase=i; renderEditor(); };
+window.updateTheory=(pi,ci,ti,field,val)=>{ FIXTURE.phases[pi].categories[ci].theory[ti][field]=val; };
+window.updateAct=(pi,ci,ai,field,val)=>{ FIXTURE.phases[pi].categories[ci].activities[ai][field]=val; };
+window.publishFixture=async()=>{ await saveFixture(); };
+
+// ══════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════
+window.openDetail=(name)=>{
+  const s=allStudents.find(s=>s.id===name); if(!s) return;
+  const tot=totalActs(), done=getTotalDone(s.progress), pct=Math.round(done/tot*100);
+  const p=s.profile||{};
+  let html=`<button class="dp-close" onclick="closeDetail()">✕</button>
+    <div style="font-size:2rem;margin-bottom:.3rem">${p.avatar||'🧑'}</div>
+    <div class="dp-name">${s.id}</div>
+    <div class="dp-meta">Progreso total: ${pct}% (${done}/${tot}) · Última vez: ${fmtLast(s.lastSeen)}</div>`;
+
+  FIXTURE.phases.forEach((ph,pi)=>{
+    const pp=getPhaseProg(s.progress,pi);
+    html+=`<div class="dp-phase">
+      <div class="dp-ph-title" style="color:${PHASE_COLORS[pi]}">${ph.emoji} ${ph.name}
+        <span style="font-size:.72rem;background:${PHASE_COLORS[pi]}15;padding:.15rem .5rem;border-radius:5px">${pp.done}/${pp.total}</span>
+      </div>
+      <div class="dp-bar"><div class="dp-bar-fill" style="width:${pp.pct}%;background:${PHASE_COLORS[pi]}"></div></div>`;
+    ph.categories.forEach(cat=>{
+      const cd=cat.activities.filter(a=>s.progress&&s.progress[a.id]).length;
+      html+=`<div style="font-size:.75rem;font-weight:900;color:var(--muted);margin:.4rem 0 .2rem">${cat.icon} ${cat.name} — ${cd}/${cat.activities.length}</div>
+        <div class="dp-acts">`;
+      cat.activities.forEach((act,ai)=>{
+        const isDone=s.progress&&s.progress[act.id];
+        html+=`<div class="dp-act ${isDone?'done':''}">
+          <span>${isDone?'✅':'⬜'}</span>
+          <span style="flex:1">${act.name}</span>
+          <span style="font-size:.68rem">${isDone?'Completada':'Pendiente'}</span>
+        </div>`;
+      });
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  });
+
+  document.getElementById('detailPanel').innerHTML=html;
+  document.getElementById('detailOverlay').classList.add('open');
+};
+window.closeDetail=(e)=>{
+  if(!e||e.target===document.getElementById('detailOverlay'))
+    document.getElementById('detailOverlay').classList.remove('open');
+};
+
+// ══════════════════════════════════
+// UTILS
+// ══════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function escH(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+</script>
+</body>
+</html>
