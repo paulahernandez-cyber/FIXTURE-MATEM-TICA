@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 Fixture Matemático</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#60a5fa;--accent-rgb:96,165,250;
+  --bg:#07071a;--card:#13132e;--card2:#1a1a40;
+  --gold:#f59e0b;--gold2:#fbbf24;--green:#34d399;
+  --pink:#f472b6;--purple:#a78bfa;--red:#f87171;
+  --text:#e2e8f0;--muted:#64748b;--border:rgba(255,255,255,0.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;background:var(--bg);transition:background .6s;}
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 15% 40%,rgba(var(--accent-rgb),.18) 0%,transparent 55%),
+    radial-gradient(ellipse at 85% 15%,rgba(var(--accent-rgb),.12) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 90%,rgba(var(--accent-rgb),.08) 0%,transparent 50%);
+  pointer-events:none;z-index:0;transition:all .6s;}
+.screen{display:none;position:relative;z-index:1;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* LOGIN */
+#loginScreen{align-items:center;justify-content:center;padding:2rem 1rem;}
+.login-box{background:rgba(19,19,46,.96);border:2px solid var(--border);border-radius:24px;
+  padding:2.5rem 2rem;max-width:400px;width:100%;text-align:center;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);animation:popIn .4s ease;}
+@keyframes popIn{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:none;}}
+.trophy-ico{font-size:4rem;display:block;margin-bottom:.5rem;
+  filter:drop-shadow(0 0 28px rgba(245,158,11,1));animation:tFloat 3s ease-in-out infinite;}
+@keyframes tFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.login-title{font-family:'Fredoka One',cursive;font-size:2.1rem;
+  background:linear-gradient(135deg,#f59e0b,#f472b6,#60a5fa);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.2rem;}
+.login-sub{color:var(--muted);font-size:.88rem;font-weight:700;margin-bottom:1.5rem;}
+.sec-lbl{display:block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.45rem;}
+.av-grid{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;margin-bottom:.75rem;}
+.av-btn{width:40px;height:40px;border-radius:10px;border:2px solid var(--border);background:transparent;
+  font-size:1.2rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.av-btn:hover{border-color:var(--gold);transform:scale(1.12);}
+.av-btn.sel{border-color:var(--gold);background:rgba(245,158,11,.15);box-shadow:0 0 14px rgba(245,158,11,.45);}
+.cl-grid{display:flex;gap:.45rem;justify-content:center;margin-bottom:.7rem;}
+.cl-btn{width:28px;height:28px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all .2s;}
+.cl-btn:hover{transform:scale(1.25);}
+.cl-btn.sel{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,.6);transform:scale(1.15);}
+.cl-ring{width:52px;height:52px;border-radius:50%;margin:.1rem auto .9rem;border:3px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:all .3s;}
+.name-inp{width:100%;background:rgba(255,255,255,.05);border:2px solid var(--border);border-radius:12px;
+  color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;padding:.7rem 1rem;
+  outline:none;text-align:center;transition:border-color .2s;margin-bottom:1rem;}
+.name-inp:focus{border-color:var(--accent);}
+.name-inp::placeholder{color:var(--muted);}
+.enter-btn{width:100%;padding:.75rem;border-radius:14px;border:none;font-family:'Nunito',sans-serif;
+  font-weight:900;font-size:1rem;cursor:pointer;
+  background:linear-gradient(135deg,#f59e0b,#f472b6);color:#1a0a00;
+  box-shadow:0 4px 24px rgba(245,158,11,.45);transition:all .2s;}
+.enter-btn:hover{transform:translateY(-2px);}
+.enter-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.known-wrap{margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border);}
+.known-list{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-top:.5rem;}
+.known-chip{background:var(--card2);border:1.5px solid var(--border);border-radius:999px;
+  padding:.3rem .85rem;font-size:.8rem;font-weight:800;cursor:pointer;transition:all .15s;}
+.known-chip:hover{border-color:var(--accent);color:var(--accent);}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;backdrop-filter:blur(14px);
+  background:rgba(var(--accent-rgb),.07);border-bottom:1px solid rgba(var(--accent-rgb),.18);
+  padding:.6rem 1.2rem;display:flex;align-items:center;gap:.8rem;flex-shrink:0;transition:all .6s;}
+.tb-av{font-size:1.4rem;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-name{font-weight:900;font-size:.92rem;line-height:1.2;}
+.tb-prog{font-size:.7rem;font-weight:700;color:var(--muted);}
+.tb-out{background:none;border:1.5px solid var(--border);border-radius:8px;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:800;padding:.28rem .65rem;cursor:pointer;}
+.tb-out:hover{border-color:var(--red);color:var(--red);}
+
+/* TABS */
+.tabs-bar{display:flex;gap:.4rem;padding:.6rem 1rem;overflow-x:auto;scrollbar-width:none;
+  background:rgba(0,0,0,.25);border-bottom:1px solid rgba(var(--accent-rgb),.12);flex-shrink:0;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:.38rem .95rem;border-radius:999px;border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);font-family:'Nunito',sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:all .2s;}
+.tab:hover{border-color:var(--accent);color:var(--accent);}
+.tab.active{background:var(--accent);color:#000;border-color:var(--accent);box-shadow:0 0 14px rgba(var(--accent-rgb),.5);}
+.tab-pane{display:none;flex:1;}
+.tab-pane.active{display:block;}
+
+/* BRACKET */
+#tabBracket{padding:1.5rem .5rem 3rem;overflow-x:auto;}
+.bk-scroll{min-width:820px;max-width:1060px;margin:0 auto;padding:0 1rem;}
+.bk-row{display:flex;align-items:stretch;}
+.bk-col{flex:1;display:flex;flex-direction:column;}
+.bk-lbl{text-align:center;margin-bottom:.8rem;}
+.bk-lbl span{font-family:'Fredoka One',cursive;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:.2rem .75rem;display:inline-block;}
+.bk-matches{display:flex;flex-direction:column;flex:1;}
+.bk-match{display:flex;flex-direction:column;justify-content:center;flex:1;padding:.15rem 0;}
+.bk-pair{padding:0 6px;}
+.bk-card{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:.45rem .65rem;
+  font-size:.75rem;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.35rem;min-height:38px;}
+.bk-card:hover{border-color:var(--accent);transform:translateX(3px);}
+.bk-card.cur{border-color:var(--accent);background:rgba(var(--accent-rgb),.1);}
+.bk-card.comp{border-color:var(--green);background:rgba(52,211,153,.08);color:var(--green);}
+.bk-card.lk{opacity:.22;cursor:not-allowed;}
+.bk-card.lk:hover{transform:none;border-color:var(--border);}
+.bk-conn{width:18px;flex-shrink:0;}
+.bk-champ{flex:0 0 120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 .5rem;}
+.champ-trophy{font-size:2.8rem;filter:drop-shadow(0 0 20px rgba(245,158,11,1));animation:tFloat 3s ease-in-out infinite;margin-bottom:.5rem;}
+.champ-box{background:linear-gradient(135deg,rgba(245,158,11,.2),rgba(244,114,182,.1));border:2px solid var(--gold);
+  border-radius:14px;padding:.8rem .7rem;text-align:center;box-shadow:0 0 28px rgba(245,158,11,.35);width:100%;}
+.champ-lbl{font-family:'Fredoka One',cursive;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem;}
+.champ-name{font-weight:900;font-size:.82rem;color:var(--gold2);min-height:1.2em;}
+
+/* FIXTURE TAB */
+#tabFixture{padding:1.2rem 1rem 3rem;max-width:800px;margin:0 auto;}
+.ph-nav{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.4rem;}
+.ph-btn{padding:.4rem 1rem;border-radius:999px;border:2px solid var(--border);background:transparent;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.ph-btn.active{background:var(--accent);color:#000;border-color:var(--accent);}
+.ph-btn.lk{opacity:.35;cursor:not-allowed;}
+.ph-btn.done{border-color:var(--green);color:var(--green);}
+.ph-title{font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--gold);text-align:center;margin-bottom:.2rem;}
+.ph-sub{color:var(--muted);font-size:.83rem;font-weight:700;text-align:center;}
+.ph-pct{color:var(--green);font-size:.8rem;font-weight:800;text-align:center;margin-top:.2rem;}
+.pbar{background:rgba(255,255,255,.06);border-radius:999px;height:8px;margin:.8rem 0 1.2rem;overflow:hidden;}
+.pbar-f{height:100%;border-radius:999px;background:var(--accent);transition:width .5s;}
+.cats{display:flex;flex-direction:column;gap:.9rem;}
+.cat-card{background:var(--card);border:2px solid var(--border);border-radius:16px;overflow:hidden;}
+.cat-card:hover{border-color:rgba(var(--accent-rgb),.3);}
+.cat-hdr{display:flex;align-items:center;gap:.8rem;padding:.85rem 1rem;cursor:pointer;}
+.cat-hdr.open{border-bottom:1px solid var(--border);}
+.cat-ttl{font-family:'Fredoka One',cursive;font-size:.98rem;}
+.cat-sub2{font-size:.7rem;color:var(--muted);font-weight:700;}
+.cat-bdg{font-size:.7rem;font-weight:800;padding:.2rem .6rem;border-radius:999px;flex-shrink:0;}
+.cat-bdg.done{background:rgba(52,211,153,.2);color:var(--green);}
+.cat-bdg.partial{background:rgba(245,158,11,.2);color:var(--gold);}
+.cat-bdg.todo{background:rgba(255,255,255,.06);color:var(--muted);}
+.cat-arr{color:var(--muted);font-size:.8rem;flex-shrink:0;transition:transform .2s;margin-left:.3rem;}
+.cat-arr.open{transform:rotate(180deg);}
+.cat-body{display:none;padding:.8rem 1rem;}
+.cat-body.open{display:block;}
+.sec{border-radius:12px;padding:.75rem 1rem;margin-bottom:.7rem;}
+.sec.theory{background:rgba(245,158,11,.06);border:1.5px solid rgba(245,158,11,.18);}
+.sec.acts{background:rgba(var(--accent-rgb),.04);border:1.5px solid rgba(var(--accent-rgb),.14);}
+.sec.game{background:rgba(52,211,153,.05);border:1.5px solid rgba(52,211,153,.18);}
+.sec.extras{background:rgba(167,139,250,.05);border:1.5px solid rgba(167,139,250,.2);}
+.sec-ttl{font-weight:900;font-size:.78rem;margin-bottom:.55rem;display:flex;align-items:center;gap:.35rem;}
+.sec-ttl.t{color:var(--gold2);}
+.sec-ttl.a{color:var(--accent);}
+.sec-ttl.g{color:var(--green);}
+.sec-ttl.e{color:var(--purple);}
+.th-link{display:flex;align-items:center;gap:.4rem;color:var(--accent);font-size:.78rem;font-weight:800;text-decoration:none;margin-bottom:.25rem;}
+.th-link:hover{opacity:.7;}
+.th-empty{color:var(--muted);font-size:.76rem;font-style:italic;}
+.act-list{display:flex;flex-direction:column;gap:.4rem;}
+.act-row{display:flex;align-items:center;gap:.7rem;background:rgba(255,255,255,.03);border:1.5px solid var(--border);
+  border-radius:10px;padding:.55rem .8rem;cursor:pointer;transition:all .2s;}
+.act-row:hover{border-color:var(--accent);background:rgba(var(--accent-rgb),.06);}
+.act-row.done{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.05);}
+.act-row.game-row:hover{border-color:var(--green);background:rgba(52,211,153,.06);}
+.act-row.extra-row:hover{border-color:var(--purple);background:rgba(167,139,250,.06);}
+.act-nm{font-weight:800;font-size:.83rem;}
+.act-mt{font-size:.68rem;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:.3rem;flex-wrap:wrap;margin-top:.1rem;}
+.act-chk{font-size:1rem;flex-shrink:0;}
+.dl{display:inline-flex;align-items:center;gap:.22rem;font-size:.65rem;font-weight:800;padding:.1rem .4rem;border-radius:999px;}
+.dl.ok{background:rgba(52,211,153,.15);color:var(--green);}
+.dl.near{background:rgba(251,191,36,.15);color:var(--gold2);}
+.dl.over{background:rgba(248,113,113,.15);color:var(--red);}
+
+/* GRADE BADGE */
+.grade-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:900;
+  padding:.18rem .55rem;border-radius:999px;margin-left:.3rem;}
+.grade-excelente{background:rgba(245,158,11,.2);color:var(--gold2);}
+.grade-muyBien{background:rgba(52,211,153,.2);color:var(--green);}
+.grade-enProceso{background:rgba(96,165,250,.2);color:var(--accent);}
+.grade-rehacer{background:rgba(248,113,113,.2);color:var(--red);}
+
+/* MEDALS */
+.medals-grid{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem;}
+.medal-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;width:60px;}
+.medal-ico{font-size:1.8rem;filter:drop-shadow(0 0 6px rgba(245,158,11,.6));transition:all .2s;}
+.medal-ico.locked{filter:grayscale(1) brightness(.4);cursor:default;}
+.medal-lbl{font-size:.55rem;font-weight:800;text-align:center;color:var(--muted);line-height:1.2;}
+
+/* PROGRESS */
+#tabProgress{padding:1.2rem 1rem 3rem;max-width:660px;margin:0 auto;}
+.st-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.st-box{background:var(--card);border:1.5px solid rgba(var(--accent-rgb),.2);border-radius:12px;
+  padding:.65rem .9rem;text-align:center;flex:1;min-width:65px;}
+.st-n{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--accent);}
+.st-l{font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);}
+.ph-list{display:flex;flex-direction:column;gap:.8rem;}
+.ph-item{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:.9rem 1rem;}
+.ph-item.cur{border-color:rgba(var(--accent-rgb),.4);}
+.ph-item.comp{border-color:rgba(52,211,153,.4);}
+.mini-bar{background:rgba(255,255,255,.06);border-radius:999px;height:6px;overflow:hidden;}
+.mini-f{height:100%;border-radius:999px;background:var(--accent);transition:width .5s;}
+
+/* POPUP */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;}
+.overlay.open{display:flex;}
+.popup{background:var(--card2);border:2px solid rgba(var(--accent-rgb),.2);border-radius:20px;
+  padding:1.5rem;max-width:420px;width:100%;position:relative;animation:popIn .25s ease;max-height:90vh;overflow-y:auto;}
+.pop-x{position:absolute;top:.8rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.pop-badge{display:inline-block;padding:.2rem .7rem;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.7rem;}
+.pop-badge.actividad{background:rgba(var(--accent-rgb),.18);color:var(--accent);}
+.pop-badge.video{background:rgba(248,113,113,.18);color:var(--red);}
+.pop-badge.juego{background:rgba(52,211,153,.18);color:var(--green);}
+.pop-badge.extra{background:rgba(167,139,250,.18);color:var(--purple);}
+.pop-title{font-family:'Fredoka One',cursive;font-size:1.2rem;margin-bottom:.4rem;}
+.pop-desc{color:var(--muted);font-size:.82rem;margin-bottom:.9rem;line-height:1.5;}
+.pop-dl{border-radius:10px;padding:.45rem .8rem;margin-bottom:.8rem;font-size:.8rem;font-weight:800;}
+.pop-dl.ok{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.3);}
+.pop-dl.near{background:rgba(251,191,36,.12);color:var(--gold2);border:1px solid rgba(251,191,36,.3);}
+.pop-dl.over{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.3);}
+.pop-link{display:flex;align-items:center;gap:.4rem;background:rgba(var(--accent-rgb),.12);border:1.5px solid var(--accent);
+  color:var(--accent);border-radius:9px;padding:.5rem .9rem;font-weight:800;font-size:.83rem;text-decoration:none;margin-bottom:.6rem;}
+.pop-link:hover{background:rgba(var(--accent-rgb),.22);}
+.pop-done{display:block;width:100%;margin-top:.6rem;padding:.58rem;border-radius:10px;border:1.5px solid var(--green);
+  background:rgba(52,211,153,.12);color:var(--green);font-family:'Nunito',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;}
+.pop-done:disabled{opacity:.5;cursor:default;}
+.grade-display{margin-top:.8rem;padding:.6rem .9rem;border-radius:10px;text-align:center;}
+.grade-display.excelente{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);}
+.grade-display.muyBien{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);}
+.grade-display.enProceso{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3);}
+.grade-display.rehacer{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);}
+.grade-emoji{font-size:2rem;display:block;margin-bottom:.3rem;}
+.grade-lbl{font-weight:900;font-size:.9rem;}
+.grade-feedback{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:.3rem;}
+
+/* MEDAL CELEBRATION */
+.medal-celebration{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;
+  display:none;align-items:center;justify-content:center;flex-direction:column;}
+.medal-celebration.show{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.medal-big{font-size:6rem;display:block;animation:medalPop .5s cubic-bezier(.175,.885,.32,1.275);
+  filter:drop-shadow(0 0 40px rgba(245,158,11,1));}
+@keyframes medalPop{from{transform:scale(0) rotate(-30deg);}to{transform:scale(1) rotate(0);}}
+.medal-cel-title{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--gold);margin:.5rem 0 .3rem;text-align:center;}
+.medal-cel-sub{color:var(--gold2);font-size:.95rem;font-weight:700;text-align:center;margin-bottom:1.5rem;}
+.medal-cel-btn{padding:.7rem 2rem;border-radius:14px;border:none;background:linear-gradient(135deg,var(--gold),var(--pink));
+  color:#1a0a00;font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--green);color:#022c22;
+  font-weight:900;padding:.55rem 1.4rem;border-radius:999px;font-size:.88rem;opacity:0;transition:opacity .3s;z-index:9999;pointer-events:none;}
+.toast.show{opacity:1;}
+.cfp{position:fixed;border-radius:2px;animation:cfFall 2.5s ease-in forwards;z-index:9998;pointer-events:none;}
+@keyframes cfFall{0%{transform:translateY(-20px) rotate(0);opacity:1;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.unlock{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.85);
+  background:linear-gradient(135deg,#1a0a00,#2d1f00);border:2px solid var(--gold);
+  border-radius:20px;padding:2rem;text-align:center;z-index:300;opacity:0;transition:all .4s;pointer-events:none;
+  box-shadow:0 0 48px rgba(245,158,11,.6);min-width:260px;}
+.unlock.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="loginScreen">
+  <div class="login-box">
+    <span class="trophy-ico">🏆</span>
+    <div class="login-title">Fixture Matemático</div>
+    <div class="login-sub">¡Completá los desafíos y llegá a la final!</div>
+    <span class="sec-lbl">Tu avatar</span>
+    <div class="av-grid" id="avGrid"></div>
+    <span class="sec-lbl">Tu color — ¡cambia el fondo!</span>
+    <div class="cl-grid" id="clGrid"></div>
+    <div class="cl-ring" id="clRing"></div>
+    <input class="name-inp" id="nameInp" type="text" maxlength="20" placeholder="¿Cómo te llamás?" autocomplete="off">
+    <button class="enter-btn" id="enterBtn" onclick="doLogin()" disabled>¡Entrar al fixture! →</button>
+    <div class="known-wrap" id="knownWrap" style="display:none">
+      <span class="sec-lbl">Continuá como...</span>
+      <div class="known-list" id="knownList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="appScreen">
+  <div class="topbar">
+    <div class="tb-av" id="tbAv"></div>
+    <div style="flex:1"><div class="tb-name" id="tbName"></div><div class="tb-prog" id="tbProg"></div></div>
+    <button class="tb-out" onclick="doLogout()">Cambiar</button>
+  </div>
+  <div class="tabs-bar">
+    <button class="tab active" onclick="goTab('Bracket')">🏆 Torneo</button>
+    <button class="tab" onclick="goTab('Fixture')">📚 Actividades</button>
+    <button class="tab" onclick="goTab('Progress')">⭐ Mi progreso</button>
+  </div>
+  <div class="tab-pane active" id="tabBracket"></div>
+  <div class="tab-pane" id="tabFixture"></div>
+  <div class="tab-pane" id="tabProgress"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="ovClick(event)">
+  <div class="popup"><button class="pop-x" onclick="closePop()">✕</button><div id="popBody"></div></div>
+</div>
+
+<!-- MEDAL CELEBRATION -->
+<div class="medal-celebration" id="medalCel">
+  <span class="medal-big" id="medalBig"></span>
+  <div class="medal-cel-title" id="medalTitle"></div>
+  <div class="medal-cel-sub" id="medalSub"></div>
+  <button class="medal-cel-btn" onclick="closeMedalCel()">¡Genial! 🎉</button>
+</div>
+
+<div class="unlock" id="unlockEl">
+  <span style="font-size:3rem;display:block;margin-bottom:.5rem">🔓</span>
+  <div style="font-family:'Fredoka One',cursive;font-size:1.4rem;color:var(--gold);margin-bottom:.3rem" id="ulTitle"></div>
+  <div style="color:var(--gold2);font-size:.88rem;font-weight:700" id="ulSub"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FC={apiKey:"AIzaSyDrtAx6wC307Dy8JcqwWL25MHJ_6rfSQSs",authDomain:"fixture-fd586.firebaseapp.com",
+  projectId:"fixture-fd586",storageBucket:"fixture-fd586.firebasestorage.app",
+  messagingSenderId:"877771262749",appId:"1:877771262749:web:db2142b76393b7db67eff4"};
+const db=getFirestore(initializeApp(FC));
+
+const AVATARS=['🦊','🐯','🦁','🐸','🦋','🐙','🦄','🐧','🦖','🐠','🌙','⚡','🌈','🎯','🚀','🎮'];
+const COLORS=['#f59e0b','#60a5fa','#34d399','#f472b6','#a78bfa','#fb923c','#f87171','#38bdf8'];
+const RGB={'#f59e0b':'245,158,11','#60a5fa':'96,165,250','#34d399':'52,211,153',
+  '#f472b6':'244,114,182','#a78bfa':'167,139,250','#fb923c':'251,146,60',
+  '#f87171':'248,113,113','#38bdf8':'56,189,248'};
+const THEMES={'#f59e0b':{bg:'#1a1100',card:'#2a1c00',card2:'#332200'},
+  '#60a5fa':{bg:'#07071a',card:'#10102e',card2:'#16163a'},
+  '#34d399':{bg:'#001a0f',card:'#002e1a',card2:'#003820'},
+  '#f472b6':{bg:'#1a0714',card:'#2e0e23',card2:'#38122c'},
+  '#a78bfa':{bg:'#0e0718',card:'#1a0e2e',card2:'#201238'},
+  '#fb923c':{bg:'#1a0c00',card:'#2e1600',card2:'#381c00'},
+  '#f87171':{bg:'#1a0707',card:'#2e0e0e',card2:'#381212'},
+  '#38bdf8':{bg:'#001a22',card:'#002e3e',card2:'#00384c'}};
+const TLABELS={actividad:'Actividad',video:'Video',juego:'Juego',extra:'Extra'};
+const ICONS={actividad:'✏️',video:'▶️',juego:'🎮',extra:'⭐'};
+const PH_COLS=['#60a5fa','#f59e0b','#a78bfa','#f59e0b'];
+const RND=['Octavos','Cuartos','Semifinal','Final'];
+const GRADE_INFO={
+  excelente:{emoji:'⭐',label:'¡Excelente!',color:'excelente',medal:'🥇'},
+  muyBien:{emoji:'✅',label:'¡Muy bien!',color:'muyBien',medal:'🥈'},
+  enProceso:{emoji:'📝',label:'En proceso',color:'enProceso',medal:null},
+  rehacer:{emoji:'🔄',label:'Para rehacer',color:'rehacer',medal:null}
+};
+const CAT_MEDALS=['🏅','🎖️','🌟','💫','🔥','⚡','🎯','🏆','🌈','💎','🦁','🐯','🚀','🌙','✨','👑'];
+
+let FIXTURE=null, user=null, prog={}, grades={}, medals=[], phIdx=0, selAv=AVATARS[0], selCl=COLORS[0];
+
+// THEME
+function applyTheme(c){
+  const r=document.documentElement.style;
+  r.setProperty('--accent',c); r.setProperty('--accent-rgb',RGB[c]||'96,165,250');
+  const t=THEMES[c]||THEMES['#60a5fa'];
+  r.setProperty('--bg',t.bg); r.setProperty('--card',t.card); r.setProperty('--card2',t.card2);
+  document.body.style.background=t.bg;
+}
+
+// FIREBASE
+async function loadFix(){ try{ const s=await getDoc(doc(db,'_config','fixture')); FIXTURE=s.exists()&&s.data().phases?s.data():defFix(); }catch(e){FIXTURE=defFix();} }
+async function saveProg(){ if(!user) return; try{ await setDoc(doc(db,'students',user.name),{profile:user,progress:prog,grades,medals,lastSeen:new Date().toISOString(),phase:phIdx,unlockedPhases:user.unlockedPhases||[0]}); }catch(e){} }
+async function loadProg(name){ try{ const s=await getDoc(doc(db,'students',name)); return s.exists()?s.data():null; }catch(e){return null;} }
+async function getKnown(){ try{ const s=await getDoc(doc(db,'_index','students')); return s.exists()?(s.data().names||[]):[];  }catch(e){return[];} }
+async function regStudent(name){ try{ const s=await getDoc(doc(db,'_index','students')); const n=s.exists()?(s.data().names||[]):[];  if(!n.includes(name)) await setDoc(doc(db,'_index','students'),{names:[...n,name]}); }catch(e){} }
+
+// Listen for grade updates from teacher
+function listenGrades(){
+  if(!user) return;
+  try{
+    onSnapshot(doc(db,'students',user.name), snap=>{
+      if(!snap.exists()) return;
+      const d=snap.data();
+      const newGrades=d.grades||{};
+      // check for new grades and show notification
+      Object.entries(newGrades).forEach(([actId,g])=>{
+        if(!grades[actId]&&g) showToast(`📝 La maestra calificó una actividad!`);
+      });
+      grades=newGrades;
+      medals=d.medals||[];
+      user.unlockedPhases=d.unlockedPhases||[0];
+      renderFix(); renderProg(); renderBracket();
+    });
+  }catch(e){}
+}
+
+// DEFAULT FIXTURE
+function defFix(){
+  const mkC=(id,nm,ic)=>({id,name:nm,icon:ic,
+    theory:[{label:'Video explicativo',url:''},{label:'Apunte PDF',url:''}],
+    activities:[
+      {id:`${id}_a1`,name:'Actividad 1',type:'actividad',desc:'',link:'',deadline:''},
+      {id:`${id}_a2`,name:'Actividad 2',type:'actividad',desc:'',link:'',deadline:''},
+      {id:`${id}_a3`,name:'Actividad 3',type:'actividad',desc:'',link:'',deadline:''},
+      {id:`${id}_a4`,name:'Actividad 4',type:'actividad',desc:'',link:'',deadline:''},
+    ],
+    game:{id:`${id}_g`,name:'Juego',type:'juego',desc:'',link:'',deadline:''},
+    extras:[]
+  });
+  return {phases:[
+    {id:'oct',name:'Octavos de Final',emoji:'🌱',categories:[
+      mkC('c1','Numeración','🔢'),mkC('c2','Operaciones con números naturales','➕'),
+      mkC('c3','Situaciones problemáticas','🧩'),mkC('c4','Geometría','📐')]},
+    {id:'cua',name:'Cuartos de Final',emoji:'🔥',categories:[
+      mkC('c5','Múltiplos y divisores','🔣'),mkC('c6','Divisibilidad','➗'),
+      mkC('c7','MCM / MCD','🔗'),mkC('c8','Geometría','📐')]},
+    {id:'sem',name:'Semifinal',emoji:'⚡',categories:[
+      mkC('c9','Fracciones','🍕'),mkC('c10','Equivalencias','⚖️'),
+      mkC('c11','Operaciones con fracciones','✖️'),mkC('c12','Situaciones problemáticas','🧩')]},
+    {id:'fin',name:'¡La Gran Final!',emoji:'🏆',categories:[
+      mkC('c13','Fracciones y números decimales','💯'),mkC('c14','Sumas y restas con decimales','➕'),
+      mkC('c15','Multiplicación y división con decimales','✖️'),mkC('c16','Situaciones problemáticas','🧩')]},
+  ]};
+}
+
+// HELPERS
+function allActsCat(cat){ return [...cat.activities, cat.game, ...(cat.extras||[])]; }
+function reqActsCat(cat){ return [...cat.activities, cat.game]; } // only required
+function allActsPh(pi){ return FIXTURE.phases[pi].categories.flatMap(allActsCat); }
+function reqActsPh(pi){ return FIXTURE.phases[pi].categories.flatMap(reqActsCat); }
+function phaseProg(pi){ const a=reqActsPh(pi),d=a.filter(x=>prog[x.id]).length; return{done:d,total:a.length,pct:Math.round(d/a.length*100)}; }
+function isUnlocked(i){ return (user?.unlockedPhases||[0]).includes(i); }
+function isComplete(i){ return phaseProg(i).done===phaseProg(i).total; }
+function totDone(){ return Object.values(prog).filter(v=>v).length; }
+function totActs(){ return FIXTURE.phases.flatMap((_,i)=>reqActsPh(i)).length; }
+function findAct(id){ for(const ph of FIXTURE.phases) for(const cat of ph.categories){ for(const a of allActsCat(cat)) if(a.id===id) return a; } return null; }
+function dlInfo(dl){ if(!dl) return null; const d=new Date(dl),now=new Date(),diff=Math.ceil((d-now)/86400000); if(diff<0) return{lbl:`Venció hace ${Math.abs(diff)}d`,cls:'over'}; if(diff<=3) return{lbl:`Vence en ${diff}d`,cls:'near'}; return{lbl:d.toLocaleDateString('es-AR'),cls:'ok'}; }
+
+// cat index across all phases
+function catGlobalIndex(pi,ci){ let idx=0; for(let i=0;i<pi;i++) idx+=FIXTURE.phases[i].categories.length; return idx+ci; }
+
+// LOGIN
+async function initLogin(){
+  document.getElementById('avGrid').innerHTML=AVATARS.map((a,i)=>
+    `<button class="av-btn${i===0?' sel':''}" onclick="pickAv('${a}',this)">${a}</button>`).join('');
+  document.getElementById('clGrid').innerHTML=COLORS.map((c,i)=>
+    `<button class="cl-btn${i===0?' sel':''}" style="background:${c}" onclick="pickCl('${c}',this)"></button>`).join('');
+  refreshRing();
+  document.getElementById('nameInp').addEventListener('input',e=>{
+    document.getElementById('enterBtn').disabled=e.target.value.trim().length<2;
+  });
+  const names=await getKnown();
+  if(names.length){
+    document.getElementById('knownWrap').style.display='block';
+    document.getElementById('knownList').innerHTML=names.map(n=>
+      `<div class="known-chip" onclick="qLogin('${n}')">👤 ${n}</div>`).join('');
+  }
+}
+function refreshRing(){
+  const r=document.getElementById('clRing');
+  r.style.background=selCl+'44'; r.style.border=`3px solid ${selCl}`;
+  r.style.boxShadow=`0 0 16px ${selCl}88`;
+}
+window.pickAv=(a,btn)=>{ selAv=a; document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); };
+window.pickCl=(c,btn)=>{ selCl=c; document.querySelectorAll('.cl-btn').forEach(b=>b.classList.remove('sel')); btn.classList.add('sel'); refreshRing(); applyTheme(c); };
+
+window.doLogin=async()=>{
+  const name=document.getElementById('nameInp').value.trim(); if(name.length<2) return;
+  const btn=document.getElementById('enterBtn'); btn.disabled=true; btn.textContent='Cargando...';
+  await loadFix();
+  const ex=await loadProg(name);
+  if(ex){ user=ex.profile; prog=ex.progress||{}; grades=ex.grades||{}; medals=ex.medals||[]; phIdx=ex.phase||0; user.unlockedPhases=ex.unlockedPhases||[0]; }
+  else{ user={name,avatar:selAv,color:selCl,unlockedPhases:[0]}; prog={}; grades={}; medals=[]; phIdx=0; await regStudent(name); await saveProg(); }
+  applyTheme(user.color); enterApp();
+};
+window.qLogin=async(name)=>{
+  await loadFix(); const ex=await loadProg(name); if(!ex) return;
+  user=ex.profile; prog=ex.progress||{}; grades=ex.grades||{}; medals=ex.medals||[]; phIdx=ex.phase||0; user.unlockedPhases=ex.unlockedPhases||[0];
+  applyTheme(user.color); enterApp();
+};
+function enterApp(){
+  document.getElementById('loginScreen').classList.remove('active');
+  document.getElementById('appScreen').classList.add('active');
+  listenGrades(); updTop(); renderBracket(); renderFix(); renderProg(); goTab('Bracket');
+}
+window.doLogout=async()=>{
+  await saveProg(); user=null; prog={}; grades={}; medals=[]; phIdx=0; applyTheme(COLORS[0]);
+  document.getElementById('appScreen').classList.remove('active');
+  document.getElementById('loginScreen').classList.add('active');
+  document.getElementById('nameInp').value='';
+  document.getElementById('enterBtn').disabled=true; document.getElementById('enterBtn').textContent='¡Entrar al fixture! →';
+};
+
+// TOPBAR
+function updTop(){
+  const av=document.getElementById('tbAv');
+  av.textContent=user.avatar; av.style.background=user.color+'22'; av.style.border=`2px solid ${user.color}66`;
+  document.getElementById('tbName').textContent=user.name;
+  document.getElementById('tbProg').textContent=`${totDone()}/${totActs()} actividades · ${FIXTURE.phases[phIdx]?.name}`;
+}
+
+// TABS
+window.goTab=(id)=>{
+  const ids=['Bracket','Fixture','Progress'];
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',ids[i]===id));
+  document.querySelectorAll('.tab-pane').forEach((c,i)=>c.classList.toggle('active',ids[i]===id));
+  if(id==='Bracket') renderBracket();
+  if(id==='Progress') renderProg();
+};
+
+// BRACKET
+function renderBracket(){
+  if(!FIXTURE) return;
+  const SP=[0,40,130,310];
+  let h=`<div class="bk-scroll"><div class="bk-row">`;
+  FIXTURE.phases.forEach((ph,pi)=>{
+    h+=`<div class="bk-col"><div class="bk-lbl"><span style="color:${PH_COLS[pi]}">${ph.emoji} ${RND[pi]}</span></div>
+      <div class="bk-matches" style="gap:${SP[pi]}px">`;
+    ph.categories.forEach((cat,ci)=>{
+      const acts=reqActsCat(cat), d=acts.filter(a=>prog[a.id]).length, pct=Math.round(d/acts.length*100);
+      const comp=d===acts.length, unl=isUnlocked(pi);
+      let cls='bk-card'; if(!unl) cls+=' lk'; else if(comp) cls+=' comp'; else if(pi===phIdx) cls+=' cur';
+      h+=`<div class="bk-match"><div class="bk-pair">
+        <div class="${cls}" onclick="bkClick(${pi},${ci})">
+          <span style="font-size:.95rem">${cat.icon}</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${cat.name}</span>
+          <span style="font-size:.65rem;font-weight:900">${unl?pct+'%':'🔒'}</span>
+        </div>
+      </div></div>`;
+    });
+    h+=`</div></div>`; if(pi<3) h+=`<div class="bk-conn"></div>`;
+  });
+  const cd=isComplete(3)&&isUnlocked(3);
+  h+=`<div class="bk-champ"><div class="champ-trophy">🏆</div>
+    <div class="champ-box"><div class="champ-lbl">Campeón/a</div>
+    <div class="champ-name">${cd?`${user?.avatar} ${user?.name}`:'???'}</div></div>
+  </div></div></div>`;
+  document.getElementById('tabBracket').innerHTML=h;
+}
+window.bkClick=(pi,ci)=>{
+  if(!isUnlocked(pi)){ showToast('🔒 Tu maestra habilitará esta fase pronto'); return; }
+  phIdx=pi; renderFix(); goTab('Fixture');
+  setTimeout(()=>{
+    const b=document.getElementById(`cb_${pi}_${ci}`);
+    const t=document.getElementById(`ct_${pi}_${ci}`);
+    const hh=document.getElementById(`ch_${pi}_${ci}`);
+    if(b&&!b.classList.contains('open')){ b.classList.add('open'); t?.classList.add('open'); hh?.classList.add('open'); }
+    b?.scrollIntoView({behavior:'smooth',block:'start'});
+  },120);
+};
+
+// FIXTURE TAB
+function renderFix(){
+  if(!FIXTURE) return;
+  // find current accessible phase
+  const accessiblePhases=(user?.unlockedPhases||[0]);
+  const ph=FIXTURE.phases[phIdx], pp=phaseProg(phIdx);
+  let h=`<div class="ph-nav">`;
+  FIXTURE.phases.forEach((p,i)=>{
+    const unl=isUnlocked(i), done=isComplete(i)&&unl;
+    h+=`<button class="ph-btn${i===phIdx?' active':!unl?' lk':done?' done':''}" onclick="setPhase(${i})">${p.emoji} ${p.name}${!unl?' 🔒':done?' ✅':''}</button>`;
+  });
+  h+=`</div>
+    <div class="ph-title">${ph.emoji} ${ph.name}</div>
+    <div class="ph-sub">${isUnlocked(phIdx)?'Completá todas las categorías para avanzar':'🔒 Tu maestra habilitará esta fase pronto'}</div>
+    <div class="ph-pct">${isUnlocked(phIdx)?`${pp.done}/${pp.total} actividades · ${pp.pct}%`:''}</div>
+    ${isUnlocked(phIdx)?`<div class="pbar"><div class="pbar-f" style="width:${pp.pct}%"></div></div>`:''}
+    <div class="cats">`;
+
+  ph.categories.forEach((cat,ci)=>{
+    const reqActs=reqActsCat(cat), d=reqActs.filter(a=>prog[a.id]).length;
+    const total=reqActs.length, allDone=d===total;
+    const bCls=allDone?'done':d>0?'partial':'todo';
+    const bTxt=allDone?'✅ Completa':`${d}/${total}`;
+    const gIdx=catGlobalIndex(phIdx,ci);
+    const catMedal=medals.includes(`cat_${cat.id}`) ? CAT_MEDALS[gIdx%CAT_MEDALS.length] : null;
+
+    h+=`<div class="cat-card">
+      <div class="cat-hdr" id="ch_${phIdx}_${ci}" onclick="togCat(${phIdx},${ci})">
+        <span style="font-size:1.4rem">${cat.icon}</span>
+        <div style="flex:1">
+          <div class="cat-ttl">${cat.name} ${catMedal?`<span style="font-size:1rem">${catMedal}</span>`:''}</div>
+          <div class="cat-sub2">4 actividades + juego${cat.extras?.length?` + ${cat.extras.length} extras`:''}</div>
+        </div>
+        <span class="cat-bdg ${bCls}">${bTxt}</span>
+        <span class="cat-arr" id="ct_${phIdx}_${ci}">▼</span>
+      </div>
+      <div class="cat-body" id="cb_${phIdx}_${ci}">`;
+
+    if(!isUnlocked(phIdx)){
+      h+=`<div style="text-align:center;padding:1.5rem;color:var(--muted)">🔒 Esta fase aún no está habilitada</div>`;
+    } else {
+      // THEORY
+      h+=`<div class="sec theory"><div class="sec-ttl t">📚 Material Teórico</div>`;
+      const hasT=cat.theory?.some(t=>t.url);
+      if(hasT) cat.theory.forEach(t=>{ if(t.url) h+=`<a class="th-link" href="${t.url}" target="_blank">📎 ${t.label}</a>`; });
+      else h+=`<span class="th-empty">Material próximamente...</span>`;
+      h+=`</div>`;
+
+      // ACTIVITIES
+      h+=`<div class="sec acts"><div class="sec-ttl a">✏️ Actividades</div><div class="act-list">`;
+      cat.activities.forEach(act=>{
+        const done=prog[act.id], dl=dlInfo(act.deadline), grade=grades[act.id];
+        const dlH=dl?`<span class="dl ${dl.cls}">📅 ${dl.lbl}</span>`:'';
+        const gradeH=grade?`<span class="grade-badge grade-${grade}">${GRADE_INFO[grade]?.emoji} ${GRADE_INFO[grade]?.label}</span>`:'';
+        h+=`<div class="act-row${done?' done':''}" onclick="openAct('${act.id}')">
+          <span style="font-size:1rem">${ICONS[act.type]||'✏️'}</span>
+          <div style="flex:1"><div class="act-nm">${act.name}</div><div class="act-mt">${TLABELS[act.type]} ${dlH} ${gradeH}</div></div>
+          <span class="act-chk">${done?'✅':'⬜'}</span>
+        </div>`;
+      });
+      h+=`</div></div>`;
+
+      // GAME
+      const g=cat.game, gd=prog[g.id], gdl=dlInfo(g.deadline), gg=grades[g.id];
+      const gdlH=gdl?`<span class="dl ${gdl.cls}">📅 ${gdl.lbl}</span>`:'';
+      const ggH=gg?`<span class="grade-badge grade-${gg}">${GRADE_INFO[gg]?.emoji} ${GRADE_INFO[gg]?.label}</span>`:'';
+      h+=`<div class="sec game"><div class="sec-ttl g">🎮 Juego</div><div class="act-list">
+        <div class="act-row game-row${gd?' done':''}" onclick="openAct('${g.id}')">
+          <span style="font-size:1rem">🎮</span>
+          <div style="flex:1"><div class="act-nm">${g.name}</div><div class="act-mt">Juego ${gdlH} ${ggH}</div></div>
+          <span class="act-chk">${gd?'✅':'⬜'}</span>
+        </div>
+      </div></div>`;
+
+      // EXTRAS
+      if(cat.extras?.length){
+        h+=`<div class="sec extras"><div class="sec-ttl e">⭐ Actividades Extra (opcionales)</div><div class="act-list">`;
+        cat.extras.forEach(act=>{
+          const done=prog[act.id], dl=dlInfo(act.deadline);
+          const dlH=dl?`<span class="dl ${dl.cls}">📅 ${dl.lbl}</span>`:'';
+          h+=`<div class="act-row extra-row${done?' done':''}" onclick="openAct('${act.id}')">
+            <span style="font-size:1rem">⭐</span>
+            <div style="flex:1"><div class="act-nm">${act.name}</div><div class="act-mt">Extra ${dlH}</div></div>
+            <span class="act-chk">${done?'✅':'⬜'}</span>
+          </div>`;
+        });
+        h+=`</div></div>`;
+      }
+    }
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  document.getElementById('tabFixture').innerHTML=h;
+}
+
+window.togCat=(pi,ci)=>{
+  const b=document.getElementById(`cb_${pi}_${ci}`), t=document.getElementById(`ct_${pi}_${ci}`), hh=document.getElementById(`ch_${pi}_${ci}`);
+  const o=b.classList.toggle('open'); t?.classList.toggle('open',o); hh?.classList.toggle('open',o);
+};
+window.setPhase=(i)=>{
+  if(!isUnlocked(i)){ showToast('🔒 Tu maestra habilitará esta fase pronto'); return; }
+  phIdx=i; renderFix();
+};
+
+// POPUP
+window.openAct=(id)=>{
+  const act=findAct(id); if(!act) return;
+  const done=prog[act.id], dl=dlInfo(act.deadline), grade=grades[act.id];
+  const dlH=dl?`<div class="pop-dl ${dl.cls}">📅 ${dl.lbl}</div>`:'';
+  let gradeH='';
+  if(grade){
+    const gi=GRADE_INFO[grade];
+    gradeH=`<div class="grade-display ${gi.color}"><span class="grade-emoji">${gi.emoji}</span>
+      <div class="grade-lbl">${gi.label}</div>
+      ${grades[`${id}_feedback`]?`<div class="grade-feedback">"${grades[`${id}_feedback`]}"</div>`:''}
+    </div>`;
+  }
+  document.getElementById('popBody').innerHTML=`
+    <span class="pop-badge ${act.type}">${TLABELS[act.type]||act.type}</span>
+    <div class="pop-title">${act.name}</div>
+    ${act.desc?`<div class="pop-desc">${act.desc}</div>`:''}
+    ${dlH}
+    ${act.link?`<a class="pop-link" href="${act.link}" target="_blank">🔗 Ir a la actividad →</a>`
+      :`<div class="pop-desc" style="font-style:italic">Link próximamente...</div>`}
+    ${gradeH}
+    <button class="pop-done" ${done?'disabled':''} onclick="markDone('${act.id}')">
+      ${done?'✅ Ya la entregaste':'✔️ Marcar como entregada'}
+    </button>`;
+  document.getElementById('overlay').classList.add('open');
+};
+
+window.markDone=async(actId)=>{
+  prog[actId]=true;
+  // check if full category completed
+  let catCompleted=null, catPhIdx=-1, catCiIdx=-1;
+  FIXTURE.phases.forEach((ph,pi)=>ph.categories.forEach((cat,ci)=>{
+    const req=reqActsCat(cat);
+    if(req.some(a=>a.id===actId) && req.every(a=>prog[a.id]||a.id===actId)){
+      if(!medals.includes(`cat_${cat.id}`)){ catCompleted=cat; catPhIdx=pi; catCiIdx=ci; }
+    }
+  }));
+  if(catCompleted){ medals.push(`cat_${catCompleted.id}`); }
+  await saveProg(); closePop();
+  renderBracket(); renderFix(); renderProg(); updTop();
+  if(catCompleted){
+    setTimeout(()=>showMedalCelebration(catCompleted, catPhIdx, catCiIdx), 400);
+  } else {
+    showToast('✅ ¡Actividad entregada!');
+  }
+};
+
+function showMedalCelebration(cat, pi, ci){
+  const gIdx=catGlobalIndex(pi,ci);
+  const medalEmoji=CAT_MEDALS[gIdx%CAT_MEDALS.length];
+  document.getElementById('medalBig').textContent=medalEmoji;
+  document.getElementById('medalTitle').textContent=`¡Categoría completada!`;
+  document.getElementById('medalSub').textContent=`Ganaste la medalla de ${cat.name} 🎉`;
+  document.getElementById('medalCel').classList.add('show');
+  confetti();
+}
+window.closeMedalCel=()=>{ document.getElementById('medalCel').classList.remove('show'); };
+
+window.closePop=()=>document.getElementById('overlay').classList.remove('open');
+window.ovClick=(e)=>{ if(e.target===document.getElementById('overlay')) closePop(); };
+
+// PROGRESS
+function renderProg(){
+  if(!FIXTURE) return;
+  const tot=totActs(), done=totDone(), pct=Math.round(done/tot*100);
+  const earnedMedals=medals.filter(m=>m.startsWith('cat_')).length;
+  const totalCats=FIXTURE.phases.flatMap(p=>p.categories).length;
+
+  let h=`<div style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--gold);margin-bottom:.2rem">${user?.avatar} ${user?.name}</div>
+    <div style="color:var(--muted);font-size:.83rem;font-weight:700;margin-bottom:1rem">Tu progreso en el fixture</div>
+    <div class="st-row">
+      <div class="st-box"><div class="st-n">${done}</div><div class="st-l">Entregadas</div></div>
+      <div class="st-box"><div class="st-n">${tot-done}</div><div class="st-l">Pendientes</div></div>
+      <div class="st-box"><div class="st-n">${earnedMedals}</div><div class="st-l">Medallas</div></div>
+      <div class="st-box"><div class="st-n">${pct}%</div><div class="st-l">Total</div></div>
+    </div>
+    <div class="pbar" style="margin-bottom:1.4rem"><div class="pbar-f" style="width:${pct}%;background:linear-gradient(90deg,var(--accent),var(--gold))"></div></div>`;
+
+  // MEDALS SHOWCASE
+  h+=`<div style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold2);margin-bottom:.7rem">🏅 Mis medallas</div>
+    <div class="medals-grid">`;
+  let catIdx=0;
+  FIXTURE.phases.forEach((ph,pi)=>ph.categories.forEach((cat,ci)=>{
+    const earned=medals.includes(`cat_${cat.id}`);
+    const medalEmoji=CAT_MEDALS[catIdx%CAT_MEDALS.length];
+    h+=`<div class="medal-item">
+      <span class="medal-ico ${earned?'':'locked'}">${medalEmoji}</span>
+      <span class="medal-lbl">${cat.name}</span>
+    </div>`;
+    catIdx++;
+  }));
+  h+=`</div>`;
+
+  // PHASE LIST
+  h+=`<div style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold2);margin:.8rem 0 .7rem">📊 Por fase</div>
+    <div class="ph-list">`;
+  FIXTURE.phases.forEach((ph,i)=>{
+    const unl=isUnlocked(i), pp=phaseProg(i), comp=pp.done===pp.total&&unl;
+    h+=`<div class="ph-item ${comp?'comp':i===phIdx?'cur':''}">
+      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem">
+        <span style="font-size:1.1rem">${ph.emoji}</span>
+        <span style="font-weight:900;font-size:.88rem;flex:1">${ph.name}</span>
+        ${unl?`<span style="font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--accent)">${pp.pct}%</span>`:'<span style="color:var(--muted);font-size:.8rem">🔒</span>'}
+      </div>
+      ${unl?`<div class="mini-bar"><div class="mini-f" style="width:${pp.pct}%"></div></div>
+        <div style="font-size:.7rem;color:var(--muted);font-weight:700;margin-top:.3rem">${pp.done}/${pp.total} actividades</div>`
+      :`<div style="font-size:.76rem;color:var(--muted);font-style:italic">Fase por habilitar</div>`}
+    </div>`;
+  });
+  h+=`</div>`;
+  document.getElementById('tabProgress').innerHTML=h;
+}
+
+// UTILS
+window.showToast=(m)=>{ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2400); };
+function confetti(){
+  const cols=[user?.color||'#f59e0b','#f472b6','#60a5fa','#34d399','#a78bfa','#fb923c'];
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div'); p.className='cfp';
+    p.style.cssText=`left:${Math.random()*100}vw;top:-10px;background:${cols[~~(Math.random()*cols.length)]};
+      animation-duration:${1.5+Math.random()*1.5}s;animation-delay:${Math.random()*.8}s;
+      width:${5+Math.random()*8}px;height:${5+Math.random()*8}px;`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),3500);
+  }
+}
+initLogin();
+</script>
+</body>
+</html>
