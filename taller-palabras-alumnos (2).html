@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller de Palabras</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5efe4;--paper-dark:#ede4d4;--paper-mid:#f0e8d8;
+  --ink:#2c2416;--ink-light:#5c4f3a;--ink-x:#9a8a70;
+  --red:#c97060;--red-light:#e8a89c;
+  --blue-line:#c8d8e8;
+  --green:#6ab06a;--green-dk:#3a7a3a;--green-bg:#eef8ee;
+  --amber:#d49830;--amber-bg:#fef8ea;
+  --purple:#8a6aac;--purple-bg:#f5f0ff;
+  --teal:#5a9ab0;
+  --orange:#d07030;
+  --shadow:rgba(44,36,22,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#cfc5aa;min-height:100vh;font-family:'DM Sans',sans-serif;color:var(--ink);}
+.screen{display:none;}.screen.on{display:flex;}
+
+/* LOGIN */
+.ls{align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;}
+.book{background:var(--paper);border-radius:4px 14px 14px 4px;box-shadow:-8px 0 0 #a89878,0 8px 36px rgba(44,36,22,0.32);width:100%;max-width:440px;overflow:hidden;position:relative;}
+.book::before{content:'';position:absolute;left:50px;top:0;bottom:0;width:2px;background:var(--red-light);opacity:0.55;}
+.blines{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:0.38;background-image:repeating-linear-gradient(transparent,transparent 31px,var(--blue-line) 31px,var(--blue-line) 32px);background-position:0 74px;}
+.bhead{background:var(--red);padding:2rem 2rem 1.4rem;text-align:center;}
+.bhead h1{font-family:'Caveat',cursive;font-size:2.3rem;color:white;font-weight:700;}
+.bhead p{font-family:'Lora',serif;font-style:italic;color:rgba(255,255,255,0.82);font-size:0.9rem;margin-top:0.3rem;}
+.ntabs{display:flex;}
+.ntab{flex:1;height:7px;}
+.ntab:nth-child(1){background:var(--amber);}
+.ntab:nth-child(2){background:var(--green);}
+.ntab:nth-child(3){background:var(--purple);}
+.ntab:nth-child(4){background:var(--teal);}
+.bbody{padding:2rem 2.5rem 2.5rem;position:relative;z-index:1;}
+.abanner{background:white;border-radius:10px;padding:1rem 1.2rem;border:2px solid var(--paper-dark);margin-bottom:0.8rem;cursor:pointer;transition:all 0.2s;display:none;}
+.abanner:hover{border-color:var(--red);}
+.abanner .lbl{font-size:0.72rem;color:var(--ink-x);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.1rem;}
+.abanner .sname{font-family:'Caveat',cursive;font-size:1.6rem;color:var(--ink);font-weight:700;}
+.abanner .hint{font-size:0.72rem;color:var(--red);margin-top:0.12rem;}
+.divid{text-align:center;font-size:0.75rem;color:var(--ink-x);margin:0.5rem 0;font-family:'Lora',serif;font-style:italic;display:none;}
+.bbody label{display:block;font-family:'Caveat',cursive;font-size:1.1rem;color:var(--ink-light);margin-bottom:0.35rem;margin-top:0.8rem;}
+.bbody input{width:100%;padding:0.68rem 0.95rem;border:1.5px solid var(--paper-dark);border-radius:7px;background:white;font-family:'DM Sans',sans-serif;font-size:1rem;color:var(--ink);outline:none;transition:border-color 0.2s;}
+.bbody input:focus{border-color:var(--red);}
+.btn-ing{width:100%;margin-top:1.4rem;padding:0.85rem;background:var(--red);color:white;border:none;border-radius:8px;font-family:'Caveat',cursive;font-size:1.4rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.btn-ing:hover{background:#b05a50;}
+.btn-doc{display:block;text-align:center;margin-top:0.75rem;color:var(--ink-x);font-size:0.8rem;cursor:pointer;}
+.btn-doc:hover{color:var(--red);text-decoration:underline;}
+
+/* APP */
+.as{flex-direction:column;min-height:100vh;}
+.ah{background:var(--paper);border-bottom:3px solid var(--red-light);padding:0.72rem 1.4rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px var(--shadow);position:sticky;top:0;z-index:200;}
+.ah h2{font-family:'Caveat',cursive;font-size:1.55rem;color:var(--red);font-weight:700;}
+.ah .sub{font-family:'Lora',serif;font-style:italic;color:var(--ink-x);font-size:0.82rem;margin-left:0.5rem;}
+.ahr{display:flex;align-items:center;gap:0.7rem;}
+.ubadge{background:var(--paper-dark);border-radius:20px;padding:0.25rem 0.85rem;font-family:'Caveat',cursive;font-size:0.95rem;}
+.btsm{background:none;border:1.5px solid var(--paper-dark);border-radius:6px;padding:0.25rem 0.65rem;font-size:0.74rem;color:var(--ink-light);cursor:pointer;transition:all 0.2s;}
+.btsm:hover{border-color:var(--red);color:var(--red);}
+.abody{flex:1;overflow-y:auto;}
+.tc{display:none;max-width:900px;margin:0 auto;padding:1.5rem;}
+.tc.on{display:block;}
+.bnav{background:var(--paper);border-top:2px solid var(--paper-dark);display:flex;position:sticky;bottom:0;z-index:200;box-shadow:0 -2px 8px var(--shadow);}
+.bb{flex:1;padding:0.62rem 0.4rem;text-align:center;cursor:pointer;font-size:0.7rem;color:var(--ink-x);border:none;background:none;font-family:'DM Sans',sans-serif;display:flex;flex-direction:column;align-items:center;gap:0.18rem;}
+.bb .bi{font-size:1.25rem;}
+.bb.on{color:var(--red);}
+
+/* SEGUIMIENTO */
+.seg-h{margin-bottom:1.3rem;}
+.seg-h .st{font-family:'Caveat',cursive;font-size:1.8rem;color:var(--ink);}
+.seg-h .ss{font-family:'Lora',serif;font-style:italic;color:var(--ink-x);font-size:0.86rem;margin-top:0.1rem;}
+.prog-card{background:var(--paper);border-radius:11px;padding:1.1rem 1.3rem;box-shadow:0 2px 10px var(--shadow);margin-bottom:1.1rem;}
+.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.45rem;}
+.prog-top span{font-family:'Caveat',cursive;font-size:1.05rem;}
+.prog-top .pp{font-size:0.82rem;color:var(--ink-light);}
+.pbg{height:10px;background:var(--paper-dark);border-radius:10px;overflow:hidden;}
+.pfill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--green),#5ac05a);transition:width 0.6s;}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1.3rem;}
+.sstat{background:var(--paper);border-radius:10px;padding:0.9rem;text-align:center;box-shadow:0 2px 8px var(--shadow);border-top:3px solid;}
+.sstat.sp{border-color:var(--orange);} .sstat.sok{border-color:var(--green);} .sstat.sn{border-color:var(--purple);}
+.snum{font-family:'Caveat',cursive;font-size:2.4rem;font-weight:700;line-height:1;}
+.sp .snum{color:var(--orange);}.sok .snum{color:var(--green-dk);}.sn .snum{color:var(--purple);}
+.slbl{font-size:0.72rem;color:var(--ink-x);margin-top:0.15rem;font-family:'Lora',serif;font-style:italic;}
+
+.psec-title{font-family:'Caveat',cursive;font-size:1.25rem;color:var(--ink);margin-bottom:0.7rem;display:flex;align-items:center;gap:0.3rem;}
+.pitem{background:var(--paper);border-radius:9px;padding:0.85rem 1rem;box-shadow:0 1px 6px var(--shadow);margin-bottom:0.55rem;display:flex;align-items:center;gap:0.75rem;border-left:4px solid;}
+.pitem.pv{border-color:var(--red);}.pitem.pp2{border-color:var(--amber);}.pitem.po{border-color:var(--green);}
+.pi-icon{font-size:1.1rem;flex-shrink:0;}
+.pi-info{flex:1;}
+.pi-t{font-family:'Caveat',cursive;font-size:1.02rem;font-weight:700;}
+.pi-d{font-size:0.76rem;color:var(--ink-x);margin-top:0.05rem;}
+.pi-f{font-size:0.73rem;padding:0.16rem 0.48rem;border-radius:9px;font-weight:500;white-space:nowrap;}
+.pv .pi-f{background:#ffe0dc;color:#a03020;}.pp2 .pi-f{background:var(--amber-bg);color:var(--amber);}.po .pi-f{background:var(--green-bg);color:var(--green-dk);}
+
+.boletin{background:var(--paper);border-radius:12px;padding:1.1rem 1.3rem;box-shadow:0 2px 8px var(--shadow);margin-top:1.3rem;}
+.boletin h3{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--ink);margin-bottom:0.75rem;}
+.br{display:flex;align-items:center;gap:0.5rem;padding:0.42rem 0;border-bottom:1px solid var(--paper-dark);}
+.br:last-of-type{border-bottom:none;}
+.bt{flex:1;font-size:0.86rem;}
+.bn{font-family:'Caveat',cursive;font-size:1.28rem;font-weight:700;color:var(--green-dk);min-width:34px;text-align:right;}
+.bn.sin{color:var(--ink-x);font-size:0.8rem;font-family:'DM Sans',sans-serif;font-weight:400;}
+.bprom{margin-top:0.75rem;padding:0.65rem 0.9rem;background:var(--green-bg);border-radius:8px;display:flex;align-items:center;justify-content:space-between;}
+.bprom span{font-family:'Lora',serif;font-style:italic;font-size:0.85rem;color:var(--green-dk);}
+.bprom strong{font-family:'Caveat',cursive;font-size:1.55rem;color:var(--green-dk);}
+
+/* TEMAS */
+.tlt{font-family:'Caveat',cursive;font-size:1.8rem;color:var(--ink);margin-bottom:1rem;}
+.tcard{background:var(--paper);border-radius:11px;box-shadow:0 2px 10px var(--shadow);overflow:hidden;margin-bottom:1rem;position:relative;}
+.tcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;}
+.tcard.c0::before{background:var(--amber);}.tcard.c1::before{background:var(--green);}.tcard.c2::before{background:var(--purple);}.tcard.c3::before{background:var(--teal);}.tcard.c4::before{background:var(--red);}
+.ttop{padding:0.88rem 1.1rem 0.75rem 1.35rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.ttit{font-family:'Caveat',cursive;font-size:1.22rem;font-weight:700;}
+.thint{font-size:0.7rem;color:var(--ink-x);font-family:'Lora',serif;font-style:italic;margin-top:0.1rem;}
+.tbadges{display:flex;gap:0.28rem;flex-wrap:wrap;justify-content:flex-end;}
+.badge{padding:0.17rem 0.5rem;border-radius:10px;font-size:0.68rem;font-weight:500;}
+.bn2{background:var(--green-bg);color:var(--green-dk);}.bs{background:#f8d7da;color:#8a2020;}
+.tetapas{display:flex;border-top:1px solid var(--paper-dark);}
+.ebtn{flex:1;padding:0.5rem 0.3rem;font-size:0.73rem;color:var(--ink-x);cursor:pointer;border:none;background:none;display:flex;align-items:center;justify-content:center;gap:0.22rem;border-right:1px solid var(--paper-dark);font-family:'DM Sans',sans-serif;transition:background 0.15s;white-space:nowrap;overflow:hidden;}
+.ebtn:last-child{border-right:none;}.ebtn:hover{background:var(--paper-dark);}.ebtn.on{background:var(--paper-dark);font-weight:600;color:var(--ink);}
+.edot{width:5px;height:5px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.d0{background:var(--amber);}.d1{background:var(--green);}.d2{background:var(--purple);}
+.tdet{display:none;background:var(--paper-mid);border-top:1px solid var(--blue-line);padding:1.05rem 1.35rem;}
+.tdet.on{display:block;}
+.dcont{background:white;border-radius:8px;padding:0.95rem 1.05rem;font-family:'Lora',serif;font-size:0.91rem;line-height:1.85;color:var(--ink);box-shadow:0 1px 4px var(--shadow);white-space:pre-wrap;}
+.fchip{display:inline-flex;align-items:center;gap:0.28rem;padding:0.22rem 0.6rem;border-radius:9px;font-size:0.73rem;font-weight:500;margin-bottom:0.65rem;}
+.fok{background:var(--green-bg);color:var(--green-dk);}.fwarn{background:var(--amber-bg);color:var(--amber);}.fvenc{background:#ffe0dc;color:#a03020;}.fnone{background:var(--paper-dark);color:var(--ink-x);}
+.lrow{margin-top:0.65rem;display:flex;flex-direction:column;gap:0.38rem;}
+.lpill{display:flex;align-items:center;gap:0.5rem;background:white;border-radius:7px;padding:0.52rem 0.72rem;box-shadow:0 1px 3px var(--shadow);text-decoration:none;color:var(--ink);font-size:0.83rem;transition:background 0.15s;}
+.lpill:hover{background:#f0f8ff;}.lpill .li{font-size:0.9rem;flex-shrink:0;}.lpill .ll{flex:1;}.lpill .le{font-size:0.68rem;color:var(--ink-x);}
+.rbtn{display:inline-flex;align-items:center;gap:0.38rem;padding:0.38rem 0.8rem;border-radius:20px;font-size:0.8rem;cursor:pointer;border:1.5px solid;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-top:0.55rem;}
+.rbtn.ur{background:white;border-color:var(--amber);color:var(--amber);}.rbtn.ur:hover{background:var(--amber-bg);}
+.rbtn.rd{background:var(--amber-bg);border-color:var(--amber);color:#8a6000;}
+.acts{display:flex;flex-direction:column;gap:0.65rem;margin-top:0.3rem;}
+.aitem{background:white;border-radius:9px;padding:0.85rem 0.95rem;box-shadow:0 1px 4px var(--shadow);border-left:3px solid var(--green);}
+.atit{font-family:'Caveat',cursive;font-size:1.02rem;font-weight:700;margin-bottom:0.25rem;}
+.adesc{font-family:'Lora',serif;font-size:0.86rem;color:var(--ink-light);line-height:1.6;white-space:pre-wrap;margin-bottom:0.42rem;}
+.afrow{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.42rem;}
+.amlink{display:inline-flex;align-items:center;gap:0.28rem;font-size:0.76rem;color:var(--teal);text-decoration:none;}
+.amlink:hover{text-decoration:underline;}
+.als{margin-top:0.42rem;}
+.als label{font-size:0.7rem;color:var(--ink-x);text-transform:uppercase;letter-spacing:0.04em;display:block;margin-bottom:0.22rem;}
+.lirow{display:flex;gap:0.38rem;}
+.linp{flex:1;padding:0.4rem 0.6rem;border:1.5px solid var(--paper-dark);border-radius:6px;font-size:0.82rem;outline:none;transition:border-color 0.2s;}
+.linp:focus{border-color:var(--green);}
+.btgl{padding:0.4rem 0.75rem;background:var(--green);color:white;border:none;border-radius:6px;font-size:0.76rem;cursor:pointer;}
+.slnk{font-size:0.73rem;color:var(--green-dk);margin-top:0.2rem;}
+.slnk a{color:var(--green-dk);}
+.entbtn{display:inline-flex;align-items:center;gap:0.38rem;padding:0.38rem 0.8rem;border-radius:20px;font-size:0.8rem;cursor:pointer;border:1.5px solid;transition:all 0.2s;font-family:'DM Sans',sans-serif;margin-top:0.45rem;}
+.entbtn.pend{background:white;border-color:var(--green);color:var(--green-dk);}.entbtn.pend:hover{background:var(--green-bg);}
+.entbtn.done{background:var(--green-bg);border-color:var(--green);color:var(--green-dk);cursor:default;}
+.notabox{margin-top:0.75rem;padding:0.82rem 0.95rem;background:var(--green-bg);border-radius:8px;border:1.5px solid var(--green);display:flex;align-items:center;gap:0.9rem;}
+.nnum{font-family:'Caveat',cursive;font-size:2.4rem;font-weight:700;color:var(--green-dk);line-height:1;}
+.ntxt{font-family:'Lora',serif;font-style:italic;font-size:0.82rem;color:var(--green-dk);}
+.sinnota{margin-top:0.65rem;padding:0.62rem 0.85rem;background:#faf5ea;border-radius:7px;color:var(--ink-x);font-family:'Lora',serif;font-style:italic;font-size:0.84rem;}
+.empty{text-align:center;padding:3rem 1rem;color:var(--ink-x);}
+.empty .ei{font-size:3rem;margin-bottom:0.7rem;}
+.empty p{font-family:'Lora',serif;font-style:italic;}
+@media(max-width:540px){.sgrid{grid-template-columns:1fr 1fr;}.sgrid .sstat:last-child{grid-column:span 2;}}
+</style>
+</head>
+<body>
+
+<div class="screen ls on" id="sLogin">
+  <div class="book">
+    <div class="blines"></div>
+    <div class="bhead">
+      <h1 id="lTit">✏️ Taller de Palabras</h1>
+      <p id="lSub">Mi cuaderno digital — 6to grado</p>
+    </div>
+    <div class="ntabs"><div class="ntab"></div><div class="ntab"></div><div class="ntab"></div><div class="ntab"></div></div>
+    <div class="bbody">
+      <div class="abanner" id="aBanner" onclick="loginAuto()">
+        <div class="lbl">Último ingreso guardado</div>
+        <div class="sname" id="aNombre"></div>
+        <div class="hint">Tocá para ingresar →</div>
+      </div>
+      <div class="divid" id="divOtro">o ingresá con otro nombre</div>
+      <label>Tu nombre y apellido</label>
+      <input type="text" id="inN" placeholder="Ej: Juan Pérez" autocomplete="off" onkeydown="if(event.key==='Enter')loginA()">
+      <button class="btn-ing" onclick="loginA()">Abrir mi cuaderno →</button>
+      <a class="btn-doc" onclick="irDoc()">¿Sos la docente? Ingresá acá</a>
+    </div>
+  </div>
+</div>
+
+<div class="screen as" id="sApp">
+  <header class="ah">
+    <div style="display:flex;align-items:baseline;gap:0.5rem">
+      <h2 id="aTit">✏️ Taller de Palabras</h2>
+      <span class="sub" id="aSub">mi cuaderno</span>
+    </div>
+    <div class="ahr">
+      <span class="ubadge" id="uBadge">—</span>
+      <button class="btsm" onclick="salir()">Salir</button>
+    </div>
+  </header>
+  <div class="abody">
+    <div class="tc on" id="tc-seg">
+      <div class="seg-h">
+        <div class="st">Mi progreso</div>
+        <div class="ss" id="segSub">Resumen de cómo venís</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-top"><span>Avance general</span><span class="pp" id="pctLbl">0%</span></div>
+        <div class="pbg"><div class="pfill" id="pBar" style="width:0%"></div></div>
+      </div>
+      <div class="sgrid">
+        <div class="sstat sp"><div class="snum" id="spN">0</div><div class="slbl">pendientes</div></div>
+        <div class="sstat sok"><div class="snum" id="sokN">0</div><div class="slbl">entregadas</div></div>
+        <div class="sstat sn"><div class="snum" id="snN">0</div><div class="slbl">notas recibidas</div></div>
+      </div>
+      <div id="pendSec"></div>
+      <div class="boletin" id="bolMini"></div>
+    </div>
+    <div class="tc" id="tc-temas">
+      <div class="tlt">📓 Mis temas</div>
+      <div id="tGrid"></div>
+    </div>
+  </div>
+  <nav class="bnav">
+    <button class="bb on" id="bb-seg" onclick="setTab('seg')"><span class="bi">📊</span>Seguimiento</button>
+    <button class="bb" id="bb-temas" onclick="setTab('temas')"><span class="bi">📓</span>Temas</button>
+  </nav>
+</div>
+
+<script>
+const SK='tallerPalabras_v3',SKU='tv3_user',SKE='tv3_est';
+const D=d=>localStorage.getItem(d),S=(d,v)=>localStorage.setItem(d,v);
+function gd(){const r=D(SK);return r?JSON.parse(r):def();}
+function sd(d){S(SK,JSON.stringify(d));}
+function ge(){const r=D(SKE);return r?JSON.parse(r):{};}
+function se(e){S(SKE,JSON.stringify(e));}
+function def(){return{config:{appNombre:"Taller de Palabras",subtitulo:"Mi cuaderno digital — 6to grado",e1Nombre:"📖 Aprendo",e2Nombre:"✏️ Practico",e3Nombre:"⭐ Ejercicio Final",e1LinkTeoricoLabel:"Material teórico",e1LinkVideoLabel:"Video explicativo"},alumnos:[],temas:[],notas:{},observaciones:{}};}
+let al=null,tabs={};
+function eK(ti,ai,tp){return`${al.nombre}||${ti}||${ai}||${tp}`;}
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(iso){if(!iso)return'';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
+function fst(iso){if(!iso)return'none';const h=new Date();h.setHours(0,0,0,0);const f=new Date(iso+'T00:00:00');const df=Math.round((f-h)/864e5);if(df<0)return'venc';if(df<=3)return'warn';return'ok';}
+function fchip(iso,pre){if(!iso)return'';const s=fst(iso);const c=s==='venc'?'fvenc':s==='warn'?'fwarn':'fok';let t=`${pre}: ${fmt(iso)}`;if(s==='venc')t+=' ⚠️';else if(s==='warn')t+=' ⏰';return`<span class="fchip ${c}">${t}</span>`;}
+function ficls(s){return s==='venc'?'pv':s==='warn'?'pp2':'po';}
+
+window.onload=()=>{
+  const d=gd();
+  document.getElementById('lTit').textContent='✏️ '+(d.config.appNombre||'Taller de Palabras');
+  document.getElementById('lSub').textContent=d.config.subtitulo||'';
+  const sv=D(SKU);
+  if(sv){const o=JSON.parse(sv);if(o.nombre){document.getElementById('aNombre').textContent=o.nombre;document.getElementById('aBanner').style.display='block';document.getElementById('divOtro').style.display='block';}}
+};
+
+function loginAuto(){const sv=D(SKU);if(!sv)return;al={nombre:JSON.parse(sv).nombre};mostrar();}
+function loginA(){
+  const n=document.getElementById('inN').value.trim();
+  if(!n){alert('Escribí tu nombre y apellido.');return;}
+  al={nombre:n};S(SKU,JSON.stringify({nombre:n}));
+  const d=gd();if(!d.alumnos.find(a=>a.nombre.toLowerCase()===n.toLowerCase())){d.alumnos.push({nombre:n,fechaAlta:new Date().toISOString()});sd(d);}
+  mostrar();
+}
+function salir(){al=null;document.getElementById('sApp').classList.remove('on');document.getElementById('sLogin').classList.add('on');}
+function irDoc(){window.location.href='taller-palabras-docente.html';}
+function mostrar(){
+  document.getElementById('sLogin').classList.remove('on');
+  document.getElementById('sApp').classList.add('on');
+  const d=gd();
+  document.getElementById('aTit').textContent='✏️ '+(d.config.appNombre||'Taller de Palabras');
+  document.getElementById('aSub').textContent=d.config.subtitulo||'';
+  document.getElementById('uBadge').textContent=al.nombre.split(' ')[0];
+  renderSeg();renderTemas();
+}
+function setTab(n){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.bb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(`tc-${n}`).classList.add('on');
+  document.getElementById(`bb-${n}`).classList.add('on');
+}
+
+function renderSeg(){
+  const d=gd(),e=ge();
+  const temas=d.temas.filter(t=>t.habilitado);
+  const notas=d.notas[al.nombre]||{};
+  let total=0,ok=0,pends=[];
+  temas.forEach(t=>{
+    if(t.aprendo||t.aprendoUrlTeorico||t.aprendoUrlVideo){
+      total++;const k=eK(t.id,'mat','leido');
+      if(e[k])ok++;else pends.push({tt:t.titulo,at:'Ver material de '+t.titulo,f:t.fechaMaterial,s:fst(t.fechaMaterial)});
+    }
+    (t.actividades||[]).forEach(a=>{
+      total++;const k=eK(t.id,a.id,'entregado');
+      if(e[k])ok++;else pends.push({tt:t.titulo,at:a.titulo||'Actividad',f:a.fechaEntrega,s:fst(a.fechaEntrega)});
+    });
+  });
+  const narr=Object.values(notas).filter(n=>n!==null&&n!==undefined&&n!=='');
+  const pct=total>0?Math.round(ok/total*100):0;
+  document.getElementById('pctLbl').textContent=pct+'%';
+  document.getElementById('pBar').style.width=pct+'%';
+  document.getElementById('spN').textContent=pends.length;
+  document.getElementById('sokN').textContent=ok;
+  document.getElementById('snN').textContent=narr.length;
+  document.getElementById('segSub').textContent=`Hola ${al.nombre.split(' ')[0]}, acá ves cómo venís`;
+
+  const ps=document.getElementById('pendSec');
+  if(!pends.length){
+    ps.innerHTML='<div class="psec-title">✅ Pendientes</div><div class="pitem po" style="border-color:var(--green)"><span class="pi-icon">🎉</span><div class="pi-info"><div class="pi-t">¡Todo al día!</div><div class="pi-d">No tenés actividades pendientes</div></div></div>';
+  } else {
+    pends.sort((a,b)=>{const o={venc:0,warn:1,ok:2,none:3};return o[a.s]-o[b.s];});
+    ps.innerHTML=`<div class="psec-title">⏳ Pendientes (${pends.length})</div>`+
+      pends.map(p=>`<div class="pitem ${ficls(p.s)}"><span class="pi-icon">${p.s==='venc'?'⚠️':p.s==='warn'?'⏰':'📌'}</span><div class="pi-info"><div class="pi-t">${escH(p.at)}</div><div class="pi-d">${escH(p.tt)}</div></div>${p.f?`<span class="pi-f">${fmt(p.f)}</span>`:''}</div>`).join('');
+  }
+
+  const bm=document.getElementById('bolMini');
+  if(!temas.length){bm.innerHTML='';return;}
+  const prom=narr.length?(narr.reduce((a,b)=>a+parseFloat(b),0)/narr.length).toFixed(1):'—';
+  bm.innerHTML=`<h3>📋 Mi boletín</h3>`+
+    temas.map(t=>{const n=notas[t.id];return`<div class="br"><span class="bt">${escH(t.titulo)}</span><span class="bn ${!n?'sin':''}">${n||'—'}</span></div>`;}).join('')+
+    `<div class="bprom"><span>Promedio general</span><strong>${prom}</strong></div>`;
+}
+
+function renderTemas(){
+  const d=gd(),e=ge();
+  const temas=d.temas.filter(t=>t.habilitado);
+  const notas=d.notas[al.nombre]||{};
+  const cfg=d.config;
+  const grid=document.getElementById('tGrid');
+  if(!temas.length){grid.innerHTML='<div class="empty"><div class="ei">📚</div><p>Tu docente todavía no habilitó temas.<br>¡Volvé pronto!</p></div>';return;}
+  const e1=cfg.e1Nombre||'📖 Aprendo',e2=cfg.e2Nombre||'✏️ Practico',e3=cfg.e3Nombre||'⭐ Ejercicio Final';
+  grid.innerHTML='';
+  temas.forEach(t=>{
+    const nota=notas[t.id];const hn=nota!==undefined&&nota!=='';
+    const tab=tabs[t.id]||null;
+    const acts=t.actividades||[];
+    const aok=acts.filter(a=>e[eK(t.id,a.id,'entregado')]).length;
+    let det='';
+    if(tab==='e1'){
+      const lido=e[eK(t.id,'mat','leido')];
+      const ls=[t.aprendoUrlTeorico?`<a class="lpill" href="${t.aprendoUrlTeorico}" target="_blank"><span class="li">📄</span><span class="ll">${escH(cfg.e1LinkTeoricoLabel||'Material teórico')}</span><span class="le">↗</span></a>`:'',
+        t.aprendoUrlVideo?`<a class="lpill" href="${t.aprendoUrlVideo}" target="_blank"><span class="li">🎬</span><span class="ll">${escH(cfg.e1LinkVideoLabel||'Video')}</span><span class="le">↗</span></a>`:''
+      ].filter(Boolean).join('');
+      det=`${fchip(t.fechaMaterial,'Ver hasta')}<div class="dcont">${escH(t.aprendo||'').replace(/\n/g,'<br>')}</div>${ls?`<div class="lrow">${ls}</div>`:''}<button class="rbtn ${lido?'rd':'ur'}" onclick="togLeido(${t.id})">${lido?'✓ Ya leí / vi el material':'Marcar como visto'}</button>`;
+    } else if(tab==='e2'){
+      if(!acts.length){det='<div class="dcont">La docente todavía no cargó actividades.</div>';}
+      else det='<div class="acts">'+acts.map(a=>{
+        const k=eK(t.id,a.id,'entregado');const done=e[k];
+        const kl=eK(t.id,a.id,'link');const lnk=e[kl]||'';
+        return`<div class="aitem"><div class="atit">${escH(a.titulo||'Actividad')}</div>${a.descripcion?`<div class="adesc">${escH(a.descripcion)}</div>`:''}<div class="afrow">${fchip(a.fechaEntrega,'Entregar antes del')}${a.urlMaterial?`<a class="amlink" href="${a.urlMaterial}" target="_blank">🔗 Ver material</a>`:''}</div><div class="als"><label>Link de tu entrega (Drive, etc.)</label><div class="lirow"><input type="url" class="linp" id="al-${t.id}-${a.id}" value="${escH(lnk)}" placeholder="https://drive.google.com/..."><button class="btgl" onclick="gLink(${t.id},'${a.id}')">Guardar</button></div>${lnk?`<div class="slnk">✓ <a href="${escH(lnk)}" target="_blank">${escH(lnk)}</a></div>`:''}</div><button class="entbtn ${done?'done':'pend'}" ${done?'':'onclick="marcar('+t.id+',\''+a.id+'\')"'}>${done?'✓ Entregada':'Marcar como entregada'}</button></div>`;
+      }).join('')+'</div>';
+    } else if(tab==='e3'){
+      det=`${fchip(t.fechaEjercicio,'Fecha del ejercicio')}<div class="dcont">${escH(t.ejercicioFinal||'').replace(/\n/g,'<br>')}</div>${hn?`<div class="notabox"><div class="nnum">${nota}</div><div class="ntxt">Tu nota en este ejercicio</div></div>`:`<div class="sinnota">✏️ Tu docente todavía no cargó tu nota.</div>`}`;
+    }
+    const c=document.createElement('div');c.className=`tcard c${(t.color||0)%5}`;
+    c.innerHTML=`<div class="ttop" onclick="togCard(${t.id})"><div><div class="ttit">${escH(t.titulo)}</div>${acts.length?`<div class="thint">${aok}/${acts.length} actividades entregadas</div>`:''}</div><div class="tbadges">${hn?`<span class="badge bn2">Nota: ${nota}</span>`:`<span class="badge bs">Sin nota</span>`}</div></div><div class="tetapas"><button class="ebtn ${tab==='e1'?'on':''}" onclick="setT(event,${t.id},'e1')"><span class="edot d0"></span>${e1}</button><button class="ebtn ${tab==='e2'?'on':''}" onclick="setT(event,${t.id},'e2')"><span class="edot d1"></span>${e2}${acts.length?` (${aok}/${acts.length})`:''}</button><button class="ebtn ${tab==='e3'?'on':''}" onclick="setT(event,${t.id},'e3')"><span class="edot d2"></span>${e3}</button></div><div class="tdet ${tab?'on':''}">${det}</div>`;
+    grid.appendChild(c);
+  });
+}
+function togCard(id){tabs[id]=tabs[id]?null:'e1';renderTemas();}
+function setT(e,id,t){e.stopPropagation();tabs[id]=t;renderTemas();}
+function togLeido(ti){const e=ge();const k=eK(ti,'mat','leido');e[k]=!e[k];se(e);renderTemas();renderSeg();}
+function marcar(ti,ai){const e=ge();e[eK(ti,ai,'entregado')]=true;se(e);renderTemas();renderSeg();}
+function gLink(ti,ai){const v=document.getElementById(`al-${ti}-${ai}`).value.trim();const e=ge();e[eK(ti,ai,'link')]=v;se(e);renderTemas();}
+</script>
+</body>
+</html>

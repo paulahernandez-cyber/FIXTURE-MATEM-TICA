@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller de Palabras — Docente</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5efe4;--pd:#ede4d4;--pm:#f0e8d8;
+  --ink:#2c2416;--il:#5c4f3a;--ix:#9a8a70;
+  --red:#c97060;--rl:#e8a89c;
+  --green:#6ab06a;--gd:#3a7a3a;--gb:#eef8ee;
+  --amber:#d49830;--ab:#fef8ea;
+  --purple:#8a6aac;--pb:#f5f0ff;
+  --teal:#5a9ab0;--tb:#eef5f8;
+  --orange:#d07030;
+  --doc:#3a6a8a;--dd:#2a4a6a;--dl:#e8f2f8;
+  --sh:rgba(44,36,22,0.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#c8d4dc;min-height:100vh;font-family:'DM Sans',sans-serif;color:var(--ink);}
+.screen{display:none;}.screen.on{display:flex;}
+
+/* LOGIN */
+.ls{align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;}
+.lcard{background:var(--paper);border-radius:12px;box-shadow:0 8px 32px rgba(44,36,22,0.22);width:100%;max-width:350px;overflow:hidden;}
+.lch{background:var(--doc);padding:1.7rem 2rem;text-align:center;}
+.lch h1{font-family:'Caveat',cursive;font-size:1.8rem;color:white;font-weight:700;}
+.lch p{font-family:'Lora',serif;font-style:italic;color:rgba(255,255,255,0.78);font-size:0.83rem;margin-top:0.2rem;}
+.lcb{padding:1.6rem 2rem 2rem;}
+.lcb label{display:block;font-family:'Caveat',cursive;font-size:1.05rem;color:var(--il);margin-bottom:0.3rem;margin-top:0.85rem;}
+.lcb input{width:100%;padding:0.62rem 0.85rem;border:1.5px solid var(--pd);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;transition:border-color 0.2s;}
+.lcb input:focus{border-color:var(--doc);}
+.btnl{width:100%;margin-top:1.3rem;padding:0.78rem;background:var(--doc);color:white;border:none;border-radius:8px;font-family:'Caveat',cursive;font-size:1.25rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.btnl:hover{background:var(--dd);}
+.btnb{display:block;text-align:center;margin-top:0.65rem;color:var(--ix);font-size:0.78rem;cursor:pointer;}
+.btnb:hover{color:var(--doc);text-decoration:underline;}
+
+/* APP */
+.as{flex-direction:column;min-height:100vh;}
+.ah{background:var(--doc);padding:0.72rem 1.4rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.18);position:sticky;top:0;z-index:200;}
+.ah h2{font-family:'Caveat',cursive;font-size:1.48rem;color:white;font-weight:700;}
+.ah .sub{font-size:0.76rem;color:rgba(255,255,255,0.62);font-family:'Lora',serif;font-style:italic;margin-left:0.45rem;}
+.bts{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.28);border-radius:6px;padding:0.28rem 0.75rem;color:white;font-size:0.76rem;cursor:pointer;}
+.bts:hover{background:rgba(255,255,255,0.24);}
+.ntabs{background:var(--dd);display:flex;padding:0 1.4rem;overflow-x:auto;}
+.nt{padding:0.6rem 1rem;color:rgba(255,255,255,0.5);cursor:pointer;font-size:0.82rem;border-bottom:3px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.nt.on{color:white;border-bottom-color:var(--amber);}
+.nt:hover:not(.on){color:rgba(255,255,255,0.82);}
+.abody{flex:1;overflow-y:auto;}
+.tc{display:none;max-width:1100px;margin:0 auto;padding:1.5rem;}
+.tc.on{display:block;}
+.stit{font-family:'Caveat',cursive;font-size:1.65rem;color:var(--ink);margin-bottom:1.1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+.snote{font-size:0.8rem;color:var(--ix);font-family:'Lora',serif;font-style:italic;font-weight:400;}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.85rem;margin-bottom:1.5rem;}
+.dcard{background:var(--paper);border-radius:10px;padding:1rem 1.1rem;box-shadow:0 2px 8px var(--sh);border-top:3px solid;}
+.dcard.d1{border-color:var(--amber);}.dcard.d2{border-color:var(--green);}.dcard.d3{border-color:var(--red);}.dcard.d4{border-color:var(--purple);}
+.dnum{font-family:'Caveat',cursive;font-size:2.5rem;font-weight:700;line-height:1;}
+.d1 .dnum{color:var(--amber);}.d2 .dnum{color:var(--gd);}.d3 .dnum{color:var(--red);}.d4 .dnum{color:var(--purple);}
+.dlbl{font-size:0.75rem;color:var(--ix);font-family:'Lora',serif;font-style:italic;margin-top:0.2rem;}
+.dalerts{background:var(--paper);border-radius:10px;padding:1rem 1.2rem;box-shadow:0 2px 8px var(--sh);margin-bottom:1.5rem;}
+.dalerts h3{font-family:'Caveat',cursive;font-size:1.2rem;color:var(--ink);margin-bottom:0.7rem;}
+.alert-row{display:flex;align-items:center;gap:0.7rem;padding:0.4rem 0;border-bottom:1px solid var(--pd);font-size:0.84rem;}
+.alert-row:last-child{border-bottom:none;}
+.alert-icon{font-size:1rem;flex-shrink:0;}
+
+/* TEMAS */
+.tlist{display:flex;flex-direction:column;gap:0.85rem;}
+.ted{background:var(--paper);border-radius:10px;box-shadow:0 2px 10px var(--sh);overflow:hidden;}
+.tedh{padding:0.85rem 1.1rem;display:flex;align-items:center;gap:0.7rem;background:var(--pd);cursor:pointer;user-select:none;}
+.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.tedt{font-family:'Caveat',cursive;font-size:1.15rem;font-weight:700;flex:1;}
+.sw-wrap{display:flex;align-items:center;gap:0.38rem;font-size:0.76rem;color:var(--ix);}
+.sw{position:relative;width:33px;height:18px;}
+.sw input{opacity:0;width:0;height:0;}
+.sld{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;border-radius:18px;transition:.3s;}
+.sld:before{content:'';position:absolute;height:12px;width:12px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.3s;}
+input:checked+.sld{background:var(--green);}
+input:checked+.sld:before{transform:translateX(15px);}
+.tedb{padding:1.1rem;display:none;}
+.tedb.on{display:block;}
+.fld{margin-bottom:0.82rem;}
+.fld label{display:block;font-size:0.72rem;font-weight:500;color:var(--ix);margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:0.05em;}
+.fld input[type=text],.fld input[type=url],.fld input[type=date],.fld textarea{width:100%;padding:0.52rem 0.7rem;border:1.5px solid var(--pd);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.86rem;color:var(--ink);background:white;outline:none;resize:vertical;transition:border-color 0.2s;}
+.fld input:focus,.fld textarea:focus{border-color:var(--doc);}
+.fld textarea{min-height:75px;}
+.etgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:0.9rem;}
+.etbox{background:#faf8f4;border-radius:8px;padding:0.82rem;border-top:3px solid;}
+.etbox:nth-child(1){border-color:var(--amber);}.etbox:nth-child(2){border-color:var(--green);}.etbox:nth-child(3){border-color:var(--purple);}
+.etlbl{font-family:'Caveat',cursive;font-size:0.98rem;font-weight:700;display:block;margin-bottom:0.45rem;}
+.etbox:nth-child(1) .etlbl{color:var(--amber);}.etbox:nth-child(2) .etlbl{color:var(--gd);}.etbox:nth-child(3) .etlbl{color:var(--purple);}
+.etbox .fld{margin-bottom:0.5rem;}
+.etbox .fld input,.etbox .fld textarea{font-size:0.8rem;}
+
+/* actividades editor */
+.acts-ed{margin-top:0.5rem;}
+.acts-ed-title{font-family:'Caveat',cursive;font-size:1rem;color:var(--il);margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between;}
+.act-ed-item{background:white;border-radius:8px;padding:0.8rem;margin-bottom:0.5rem;border:1.5px solid var(--pd);position:relative;}
+.act-ed-num{font-size:0.72rem;color:var(--ix);font-weight:500;margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.04em;}
+.btn-del-act{position:absolute;top:0.5rem;right:0.5rem;background:none;border:none;color:var(--rl);font-size:0.9rem;cursor:pointer;padding:0.2rem;}
+.btn-del-act:hover{color:var(--red);}
+.btn-add-act{width:100%;padding:0.42rem;background:white;color:var(--green);border:1.5px dashed var(--green);border-radius:6px;font-size:0.82rem;cursor:pointer;margin-top:0.3rem;text-align:center;}
+.btn-add-act:hover{background:var(--gb);}
+
+.cpick{display:flex;gap:0.38rem;margin-top:0.28rem;}
+.cp{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.1s;}
+.cp:hover{transform:scale(1.2);}.cp.on{border-color:var(--ink);}
+.brow{display:flex;gap:0.5rem;justify-content:flex-end;}
+.btnsave{padding:0.44rem 1.1rem;background:var(--doc);color:white;border:none;border-radius:6px;font-family:'Caveat',cursive;font-size:1rem;cursor:pointer;}
+.btnsave:hover{background:var(--dd);}
+.btndel{padding:0.44rem 0.85rem;background:white;color:var(--red);border:1.5px solid var(--rl);border-radius:6px;font-size:0.8rem;cursor:pointer;}
+.btndel:hover{background:#fff0ee;}
+.btn-add-tema{width:100%;padding:0.56rem;background:white;color:var(--doc);border:2px dashed var(--doc);border-radius:8px;font-family:'Caveat',cursive;font-size:1rem;cursor:pointer;margin-top:0.5rem;text-align:center;}
+.btn-add-tema:hover{background:var(--dl);}
+
+/* NOTAS */
+.nbar{display:flex;gap:0.7rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;}
+.nbar label{font-size:0.82rem;color:var(--il);}
+.nbar select{padding:0.36rem 0.65rem;border:1.5px solid var(--pd);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:0.83rem;background:white;color:var(--ink);outline:none;}
+.twrap{overflow-x:auto;border-radius:10px;box-shadow:0 2px 10px var(--sh);}
+.ntbl{width:100%;border-collapse:collapse;background:var(--paper);font-size:0.84rem;}
+.ntbl th{background:var(--doc);color:white;padding:0.6rem 0.75rem;text-align:left;font-weight:500;white-space:nowrap;}
+.ntbl th:first-child{border-radius:10px 0 0 0;}.ntbl th:last-child{border-radius:0 10px 0 0;}
+.ntbl td{padding:0.5rem 0.75rem;border-bottom:1px solid var(--pd);vertical-align:middle;}
+.ntbl tr:last-child td{border-bottom:none;}
+.ntbl tr:hover td{background:var(--dl);}
+.ni{width:65px;padding:0.26rem 0.42rem;border:1.5px solid var(--pd);border-radius:5px;font-family:'Caveat',cursive;font-size:1rem;text-align:center;outline:none;transition:border-color 0.2s;}
+.ni:focus{border-color:var(--doc);}.ni.con{background:var(--gb);border-color:var(--green);color:var(--gd);}
+.btsn{padding:0.2rem 0.5rem;background:var(--green);color:white;border:none;border-radius:4px;font-size:0.7rem;cursor:pointer;margin-left:0.28rem;}
+
+/* ALUMNOS */
+.ag{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.8rem;}
+.acard{background:var(--paper);border-radius:10px;padding:0.9rem 1rem;box-shadow:0 1px 6px var(--sh);cursor:pointer;transition:box-shadow 0.2s;}
+.acard:hover{box-shadow:0 3px 12px var(--sh);}
+.acard-name{font-family:'Caveat',cursive;font-size:1.15rem;font-weight:700;margin-bottom:0.3rem;}
+.acard-stats{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.astat{font-size:0.72rem;padding:0.15rem 0.45rem;border-radius:8px;background:var(--pd);color:var(--il);}
+.astat.ok{background:var(--gb);color:var(--gd);}
+.btn-add-a{background:white;border:2px dashed var(--doc);border-radius:10px;padding:0.9rem;display:flex;align-items:center;justify-content:center;color:var(--doc);font-size:0.85rem;cursor:pointer;}
+.btn-add-a:hover{background:var(--dl);}
+
+/* MODAL ALUMNO */
+.modal-bg{position:fixed;inset:0;background:rgba(44,36,22,0.45);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.on{display:flex;}
+.modal{background:var(--paper);border-radius:14px;box-shadow:0 8px 32px rgba(44,36,22,0.28);width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.modal-head{background:var(--doc);padding:1.1rem 1.4rem;display:flex;align-items:center;justify-content:space-between;border-radius:14px 14px 0 0;}
+.modal-head h3{font-family:'Caveat',cursive;font-size:1.4rem;color:white;font-weight:700;}
+.btn-close{background:rgba(255,255,255,0.18);border:none;color:white;font-size:1.2rem;cursor:pointer;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:1.3rem 1.4rem;}
+.modal-section{margin-bottom:1.2rem;}
+.modal-section h4{font-family:'Caveat',cursive;font-size:1.1rem;color:var(--ink);margin-bottom:0.6rem;border-bottom:1px solid var(--pd);padding-bottom:0.3rem;}
+.act-status-row{display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0;border-bottom:1px solid var(--pd);font-size:0.84rem;}
+.act-status-row:last-child{border-bottom:none;}
+.ast-icon{font-size:0.9rem;flex-shrink:0;}
+.ast-name{flex:1;}
+.ast-fecha{font-size:0.72rem;color:var(--ix);}
+.ast-badge{padding:0.15rem 0.45rem;border-radius:8px;font-size:0.7rem;font-weight:500;}
+.ast-ok{background:var(--gb);color:var(--gd);}.ast-pend{background:#f8d7da;color:#8a2020;}.ast-sin{background:var(--pd);color:var(--ix);}
+.ast-link{font-size:0.72rem;color:var(--teal);}
+.bol-row{display:flex;align-items:center;gap:0.5rem;padding:0.38rem 0;border-bottom:1px solid var(--pd);}
+.bol-row:last-of-type{border-bottom:none;}
+.bol-t{flex:1;font-size:0.85rem;}
+.bol-n{font-family:'Caveat',cursive;font-size:1.25rem;font-weight:700;color:var(--gd);min-width:32px;text-align:right;}
+.bol-n.sin{color:var(--ix);font-size:0.78rem;font-family:'DM Sans',sans-serif;font-weight:400;}
+.bol-prom{margin-top:0.65rem;padding:0.6rem 0.85rem;background:var(--gb);border-radius:8px;display:flex;align-items:center;justify-content:space-between;}
+.bol-prom span{font-family:'Lora',serif;font-style:italic;font-size:0.83rem;color:var(--gd);}
+.bol-prom strong{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--gd);}
+.obs-area{width:100%;padding:0.6rem 0.75rem;border:1.5px solid var(--pd);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:0.85rem;min-height:70px;resize:vertical;outline:none;transition:border-color 0.2s;}
+.obs-area:focus{border-color:var(--doc);}
+.btn-save-obs{padding:0.4rem 1rem;background:var(--doc);color:white;border:none;border-radius:6px;font-size:0.82rem;cursor:pointer;margin-top:0.4rem;}
+
+/* PANEL POR ACTIVIDAD */
+.act-panel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.8rem;margin-bottom:1.2rem;}
+.act-panel-card{background:var(--paper);border-radius:10px;padding:0.95rem 1.05rem;box-shadow:0 2px 8px var(--sh);cursor:pointer;transition:box-shadow 0.2s;border-left:4px solid var(--green);}
+.act-panel-card:hover{box-shadow:0 3px 14px var(--sh);}
+.apc-tema{font-size:0.72rem;color:var(--ix);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.15rem;}
+.apc-titulo{font-family:'Caveat',cursive;font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;}
+.apc-stats{display:flex;gap:0.5rem;flex-wrap:wrap;}
+.apc-stat{font-size:0.72rem;padding:0.13rem 0.42rem;border-radius:7px;}
+.apc-ok{background:var(--gb);color:var(--gd);}.apc-pend{background:#f8d7da;color:#8a2020;}.apc-fecha{background:var(--ab);color:var(--amber);}
+
+/* modal actividad */
+.actm-row{display:flex;align-items:center;gap:0.6rem;padding:0.42rem 0;border-bottom:1px solid var(--pd);font-size:0.83rem;}
+.actm-row:last-child{border-bottom:none;}
+.actm-name{flex:1;}
+.actm-link{font-size:0.72rem;color:var(--teal);word-break:break-all;}
+
+/* CONFIG */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.ccard{background:var(--paper);border-radius:10px;padding:1.1rem 1.2rem;box-shadow:0 2px 8px var(--sh);}
+.ccard h3{font-family:'Caveat',cursive;font-size:1.15rem;color:var(--doc);margin-bottom:0.8rem;}
+.btnsavec{padding:0.44rem 1.1rem;background:var(--doc);color:white;border:none;border-radius:6px;font-family:'Caveat',cursive;font-size:0.98rem;cursor:pointer;margin-top:0.4rem;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;background:var(--ink);color:white;padding:0.6rem 1.05rem;border-radius:8px;font-size:0.83rem;opacity:0;transform:translateY(8px);transition:all 0.28s;z-index:999;pointer-events:none;}
+.toast.on{opacity:1;transform:translateY(0);}
+
+@media(max-width:700px){.etgrid{grid-template-columns:1fr;}.cgrid{grid-template-columns:1fr;}.ag{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="screen ls on" id="sLogin">
+  <div class="lcard">
+    <div class="lch"><h1>📋 Panel Docente</h1><p>Taller de Palabras — 6to grado</p></div>
+    <div class="lcb">
+      <label>Usuario</label><input type="text" id="inU" placeholder="docente" autocomplete="off">
+      <label>Contraseña</label><input type="password" id="inP" placeholder="••••••" onkeydown="if(event.key==='Enter')login()">
+      <button class="btnl" onclick="login()">Ingresar al panel →</button>
+      <a class="btnb" onclick="irAl()">← Volver al panel de alumnos</a>
+    </div>
+  </div>
+</div>
+
+<div class="screen as" id="sApp">
+  <header class="ah">
+    <div><h2 id="aTit">📋 Taller de Palabras</h2><span class="sub">panel docente</span></div>
+    <button class="bts" onclick="salir()">Salir</button>
+  </header>
+  <nav class="ntabs">
+    <div class="nt on" onclick="setP('dash',this)">🏠 Inicio</div>
+    <div class="nt" onclick="setP('temas',this)">📖 Temas</div>
+    <div class="nt" onclick="setP('notas',this)">⭐ Notas</div>
+    <div class="nt" onclick="setP('actividades',this)">📋 Por actividad</div>
+    <div class="nt" onclick="setP('alumnos',this)">👥 Alumnos</div>
+    <div class="nt" onclick="setP('config',this)">⚙️ Config</div>
+  </nav>
+  <div class="abody">
+
+    <!-- DASHBOARD -->
+    <div class="tc on" id="tc-dash">
+      <div class="stit">🏠 Resumen del curso</div>
+      <div class="dash-grid" id="dashGrid"></div>
+      <div class="dalerts" id="dashAlerts"></div>
+    </div>
+
+    <!-- TEMAS -->
+    <div class="tc" id="tc-temas">
+      <div class="stit">📖 Temas <span class="snote">Los alumnos ven solo los habilitados</span></div>
+      <div class="tlist" id="tList"></div>
+      <button class="btn-add-tema" onclick="newTema()">+ Agregar nuevo tema</button>
+    </div>
+
+    <!-- NOTAS -->
+    <div class="tc" id="tc-notas">
+      <div class="stit">⭐ Notas del ejercicio final</div>
+      <div class="nbar"><label>Tema:</label><select id="selTema" onchange="renderNotas()"></select></div>
+      <div class="twrap"><table class="ntbl"><thead><tr><th>#</th><th>Alumno</th><th>Nota</th><th></th></tr></thead><tbody id="nBody"></tbody></table></div>
+    </div>
+
+    <!-- POR ACTIVIDAD -->
+    <div class="tc" id="tc-actividades">
+      <div class="stit">📋 Seguimiento por actividad</div>
+      <div id="actPanelGrid"></div>
+    </div>
+
+    <!-- ALUMNOS -->
+    <div class="tc" id="tc-alumnos">
+      <div class="stit">👥 Alumnos del curso</div>
+      <div class="ag" id="aGrid"></div>
+    </div>
+
+    <!-- CONFIG -->
+    <div class="tc" id="tc-config">
+      <div class="stit">⚙️ Configuración</div>
+      <div class="cgrid">
+        <div class="ccard"><h3>Nombre de la app</h3>
+          <div class="fld"><label>Título</label><input type="text" id="cfgN"></div>
+          <div class="fld"><label>Subtítulo</label><input type="text" id="cfgS"></div>
+          <button class="btnsavec" onclick="saveConfig()">Guardar</button>
+        </div>
+        <div class="ccard"><h3>Nombres de las solapas</h3>
+          <div class="fld"><label>Solapa 1</label><input type="text" id="cfgE1"></div>
+          <div class="fld"><label>Solapa 2</label><input type="text" id="cfgE2"></div>
+          <div class="fld"><label>Solapa 3</label><input type="text" id="cfgE3"></div>
+          <button class="btnsavec" onclick="saveConfig()">Guardar</button>
+        </div>
+        <div class="ccard"><h3>Etiquetas de links</h3>
+          <div class="fld"><label>Link teórico</label><input type="text" id="cfgL1T"></div>
+          <div class="fld"><label>Link video</label><input type="text" id="cfgL1V"></div>
+          <button class="btnsavec" onclick="saveConfig()">Guardar</button>
+        </div>
+        <div class="ccard"><h3>Contraseña del panel</h3>
+          <div class="fld"><label>Nueva contraseña</label><input type="password" id="cfgPw1" placeholder="dejar vacío para no cambiar"></div>
+          <div class="fld"><label>Confirmar</label><input type="password" id="cfgPw2"></div>
+          <button class="btnsavec" onclick="savePw()">Cambiar contraseña</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL ALUMNO -->
+<div class="modal-bg" id="modalAl" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalName">Alumno</h3>
+      <button class="btn-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- MODAL ACTIVIDAD -->
+<div class="modal-bg" id="modalAct" onclick="if(event.target===this)closeModalAct()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalActName">Actividad</h3>
+      <button class="btn-close" onclick="closeModalAct()">✕</button>
+    </div>
+    <div class="modal-body" id="modalActBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SK='tallerPalabras_v3',SKE='tv3_est',SKPW='tv3_dpw';
+const COLS=['#d49830','#6ab06a','#8a6aac','#5a9ab0','#c97060'];
+let tOpen={};
+
+function gd(){const r=localStorage.getItem(SK);return r?JSON.parse(r):def();}
+function sd(d){localStorage.setItem(SK,JSON.stringify(d));}
+function ge(){const r=localStorage.getItem(SKE);return r?JSON.parse(r):{};}
+function getPw(){return localStorage.getItem(SKPW)||'taller2024';}
+function def(){return{config:{appNombre:"Taller de Palabras",subtitulo:"Mi cuaderno digital — 6to grado",e1Nombre:"📖 Aprendo",e2Nombre:"✏️ Practico",e3Nombre:"⭐ Ejercicio Final",e1LinkTeoricoLabel:"Material teórico",e1LinkVideoLabel:"Video explicativo"},alumnos:[],temas:[],notas:{},observaciones:{}};}
+function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
+function fst(iso){if(!iso)return'none';const h=new Date();h.setHours(0,0,0,0);const f=new Date(iso+'T00:00:00');const df=Math.round((f-h)/864e5);if(df<0)return'venc';if(df<=3)return'warn';return'ok';}
+function eK(al,ti,ai,tp){return`${al}||${ti}||${ai}||${tp}`;}
+
+function login(){
+  const u=document.getElementById('inU').value.trim();
+  const p=document.getElementById('inP').value;
+  if(u==='docente'&&p===getPw()){
+    document.getElementById('sLogin').classList.remove('on');
+    document.getElementById('sApp').classList.add('on');
+    renderAll();
+  } else alert('Usuario o contraseña incorrectos.');
+}
+function salir(){document.getElementById('sApp').classList.remove('on');document.getElementById('sLogin').classList.add('on');document.getElementById('inP').value='';}
+function irAl(){window.location.href='taller-palabras-alumnos.html';}
+
+function setP(n,el){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
+  document.getElementById(`tc-${n}`).classList.add('on');
+  el.classList.add('on');
+  if(n==='notas')renderNotasBar();
+  if(n==='alumnos')renderAlumnos();
+  if(n==='config')renderConfig();
+  if(n==='actividades')renderActPanel();
+}
+
+function renderAll(){
+  const d=gd();
+  document.getElementById('aTit').textContent='📋 '+(d.config.appNombre||'Taller de Palabras');
+  renderDash();renderTemas();renderNotasBar();renderAlumnos();
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────────
+function renderDash(){
+  const d=gd(),e=ge();
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  let totalActs=0,totalEnt=0,sinNota=0,alertas=[];
+  d.temas.filter(t=>t.habilitado).forEach(t=>{
+    (t.actividades||[]).forEach(a=>{
+      totalActs++;
+      const entCount=d.alumnos.filter(al=>e[eK(al.nombre,t.id,a.id,'entregado')]).length;
+      totalEnt+=entCount;
+      if(a.fechaEntrega){const s=fst(a.fechaEntrega);if(s==='warn'||s==='venc')alertas.push({msg:`"${a.titulo||'Actividad'}" de ${t.titulo}`,fecha:fmt(a.fechaEntrega),s});}
+    });
+    if(t.fechaEjercicio){const s=fst(t.fechaEjercicio);if(s==='warn'||s==='venc')alertas.push({msg:`Ejercicio Final: ${t.titulo}`,fecha:fmt(t.fechaEjercicio),s});}
+  });
+  d.temas.forEach(t=>{
+    d.alumnos.forEach(al=>{
+      if(!(d.notas[al.nombre]||{})[t.id])sinNota++;
+    });
+  });
+  const dg=document.getElementById('dashGrid');
+  dg.innerHTML=`
+    <div class="dcard d1"><div class="dnum">${d.alumnos.length}</div><div class="dlbl">alumnos</div></div>
+    <div class="dcard d2"><div class="dnum">${d.temas.filter(t=>t.habilitado).length}</div><div class="dlbl">temas habilitados</div></div>
+    <div class="dcard d3"><div class="dnum">${totalActs>0?Math.round(totalEnt/totalActs/d.alumnos.length*100)||0:0}%</div><div class="dlbl">entregas completadas</div></div>
+    <div class="dcard d4"><div class="dnum">${sinNota}</div><div class="dlbl">notas pendientes de cargar</div></div>`;
+  const da=document.getElementById('dashAlerts');
+  if(!alertas.length){da.innerHTML='<h3>📅 Fechas próximas</h3><div style="color:var(--ix);font-size:0.85rem;font-family:\'Lora\',serif;font-style:italic">No hay fechas urgentes.</div>';return;}
+  da.innerHTML='<h3>📅 Fechas próximas / vencidas</h3>'+alertas.map(a=>`<div class="alert-row"><span class="alert-icon">${a.s==='venc'?'⚠️':'⏰'}</span><span style="flex:1">${escH(a.msg)}</span><span style="font-size:0.75rem;color:var(--ix)">${a.fecha}</span></div>`).join('');
+}
+
+// ── TEMAS ──────────────────────────────────────────────────────────────────────
+function renderTemas(){
+  const d=gd();const cfg=d.config;const list=document.getElementById('tList');list.innerHTML='';
+  d.temas.forEach(t=>{
+    const op=tOpen[t.id];
+    const e1=cfg.e1Nombre||'Aprendo',e2=cfg.e2Nombre||'Practico',e3=cfg.e3Nombre||'Ejercicio Final';
+    const div=document.createElement('div');div.className='ted';
+    const actsHTML=(t.actividades||[]).map((a,i)=>`
+      <div class="act-ed-item" id="aed-${t.id}-${a.id}">
+        <div class="act-ed-num">Actividad ${i+1}</div>
+        <button class="btn-del-act" onclick="delAct(${t.id},'${a.id}')">✕</button>
+        <div class="fld"><label>Título</label><input type="text" id="at-${t.id}-${a.id}" value="${escH(a.titulo||'')}"></div>
+        <div class="fld"><label>Descripción / consigna</label><textarea id="ad-${t.id}-${a.id}">${escH(a.descripcion||'')}</textarea></div>
+        <div class="fld"><label>Fecha de entrega</label><input type="date" id="af-${t.id}-${a.id}" value="${a.fechaEntrega||''}"></div>
+        <div class="fld"><label>URL material de la actividad</label><input type="url" id="am-${t.id}-${a.id}" value="${escH(a.urlMaterial||'')}" placeholder="https://..."></div>
+      </div>`).join('');
+    div.innerHTML=`
+      <div class="tedh" onclick="togTema(${t.id})">
+        <div class="cdot" style="background:${COLS[t.color||0]}"></div>
+        <div class="tedt">${t.titulo||'Sin título'}</div>
+        <div class="sw-wrap" onclick="event.stopPropagation()">
+          <span>${t.habilitado?'Visible':'Oculto'}</span>
+          <label class="sw"><input type="checkbox" ${t.habilitado?'checked':''} onchange="togHab(${t.id},this.checked)"><span class="sld"></span></label>
+        </div>
+      </div>
+      <div class="tedb ${op?'on':''}" id="tb-${t.id}">
+        <div class="fld"><label>Título</label><input type="text" id="tt-${t.id}" value="${escH(t.titulo||'')}"></div>
+        <div class="fld"><label>Color</label><div class="cpick">${COLS.map((c,i)=>`<div class="cp ${t.color===i?'on':''}" style="background:${c}" onclick="setCol(${t.id},${i})"></div>`).join('')}</div></div>
+        <div class="etgrid">
+          <div class="etbox">
+            <span class="etlbl">${escH(e1)}</span>
+            <div class="fld"><label>Contenido</label><textarea id="ta1-${t.id}">${escH(t.aprendo||'')}</textarea></div>
+            <div class="fld"><label>Fecha ver material</label><input type="date" id="tfm-${t.id}" value="${t.fechaMaterial||''}"></div>
+            <div class="fld"><label>URL teórico</label><input type="url" id="tu1t-${t.id}" value="${escH(t.aprendoUrlTeorico||'')}" placeholder="https://..."></div>
+            <div class="fld"><label>URL video</label><input type="url" id="tu1v-${t.id}" value="${escH(t.aprendoUrlVideo||'')}" placeholder="https://..."></div>
+          </div>
+          <div class="etbox">
+            <span class="etlbl">${escH(e2)}</span>
+            <div class="acts-ed">
+              <div class="acts-ed-title"><span>Actividades</span></div>
+              <div id="actsed-${t.id}">${actsHTML}</div>
+              <button class="btn-add-act" onclick="addAct(${t.id})">+ Agregar actividad</button>
+            </div>
+          </div>
+          <div class="etbox">
+            <span class="etlbl">${escH(e3)}</span>
+            <div class="fld"><label>Descripción</label><textarea id="ta3-${t.id}">${escH(t.ejercicioFinal||'')}</textarea></div>
+            <div class="fld"><label>Fecha del ejercicio</label><input type="date" id="tfe-${t.id}" value="${t.fechaEjercicio||''}"></div>
+          </div>
+        </div>
+        <div class="brow">
+          <button class="btndel" onclick="delTema(${t.id})">Eliminar tema</button>
+          <button class="btnsave" onclick="saveTema(${t.id})">Guardar cambios</button>
+        </div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function togTema(id){tOpen[id]=!tOpen[id];renderTemas();}
+function togHab(id,v){const d=gd();const t=d.temas.find(t=>t.id===id);if(t){t.habilitado=v;sd(d);toast(v?'✓ Tema habilitado':'Tema ocultado');}renderTemas();}
+function setCol(id,ci){const d=gd();const t=d.temas.find(t=>t.id===id);if(t){t.color=ci;sd(d);}tOpen[id]=true;renderTemas();}
+
+function addAct(tid){
+  const d=gd();const t=d.temas.find(t=>t.id===tid);if(!t)return;
+  if(!t.actividades)t.actividades=[];
+  const aid='a'+Date.now();
+  t.actividades.push({id:aid,titulo:'',descripcion:'',fechaEntrega:'',urlMaterial:''});
+  sd(d);tOpen[tid]=true;renderTemas();
+}
+function delAct(tid,aid){
+  if(!confirm('¿Eliminar esta actividad?'))return;
+  const d=gd();const t=d.temas.find(t=>t.id===tid);if(!t)return;
+  t.actividades=(t.actividades||[]).filter(a=>a.id!==aid);sd(d);tOpen[tid]=true;renderTemas();toast('Actividad eliminada');
+}
+
+function saveTema(id){
+  const d=gd();const t=d.temas.find(t=>t.id===id);if(!t)return;
+  t.titulo=v(`tt-${id}`);
+  t.aprendo=v(`ta1-${id}`);t.fechaMaterial=v(`tfm-${id}`);
+  t.aprendoUrlTeorico=v(`tu1t-${id}`);t.aprendoUrlVideo=v(`tu1v-${id}`);
+  t.ejercicioFinal=v(`ta3-${id}`);t.fechaEjercicio=v(`tfe-${id}`);
+  (t.actividades||[]).forEach(a=>{
+    a.titulo=v(`at-${id}-${a.id}`)||'';
+    a.descripcion=v(`ad-${id}-${a.id}`)||'';
+    a.fechaEntrega=v(`af-${id}-${a.id}`)||'';
+    a.urlMaterial=v(`am-${id}-${a.id}`)||'';
+  });
+  sd(d);toast('✓ Tema guardado');tOpen[id]=true;renderTemas();renderDash();
+}
+function delTema(id){
+  if(!confirm('¿Eliminar este tema y todas sus notas?'))return;
+  const d=gd();d.temas=d.temas.filter(t=>t.id!==id);
+  Object.keys(d.notas).forEach(al=>{if(d.notas[al])delete d.notas[al][id];});
+  sd(d);toast('Tema eliminado');renderTemas();renderDash();
+}
+function newTema(){
+  const d=gd();const id=Math.max(...d.temas.map(t=>t.id),0)+1;
+  d.temas.push({id,titulo:'Nuevo tema',habilitado:false,color:id%5,aprendo:'',aprendoUrlTeorico:'',aprendoUrlVideo:'',fechaMaterial:'',actividades:[],ejercicioFinal:'',fechaEjercicio:''});
+  sd(d);tOpen[id]=true;renderTemas();toast('Nuevo tema creado');
+}
+
+// ── NOTAS ──────────────────────────────────────────────────────────────────────
+function renderNotasBar(){
+  const d=gd();const sel=document.getElementById('selTema');const prev=sel.value;
+  sel.innerHTML='';d.temas.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.titulo;sel.appendChild(o);});
+  if(prev)sel.value=prev;renderNotas();
+}
+function renderNotas(){
+  const d=gd();const tid=parseInt(document.getElementById('selTema').value);
+  const tb=document.getElementById('nBody');tb.innerHTML='';
+  d.alumnos.forEach((al,i)=>{
+    const nota=(d.notas[al.nombre]||{})[tid]||'';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--ix);font-size:0.72rem">${i+1}</td><td>${escH(al.nombre)}</td><td><input type="text" class="ni ${nota?'con':''}" id="ni-${al.nombre}-${tid}" value="${nota}" placeholder="—" maxlength="6" onchange="autoN(this,'${al.nombre}',${tid})"></td><td><button class="btsn" onclick="saveNBtn('${al.nombre}',${tid})">✓</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+function autoN(inp,al,tid){saveN(al,tid,inp.value);inp.classList.toggle('con',!!inp.value);}
+function saveNBtn(al,tid){const inp=document.getElementById(`ni-${al}-${tid}`);saveN(al,tid,inp.value);inp.classList.toggle('con',!!inp.value);toast('✓ Nota guardada');}
+function saveN(al,tid,val){const d=gd();if(!d.notas[al])d.notas[al]={};d.notas[al][tid]=val;sd(d);}
+
+// ── PANEL POR ACTIVIDAD ────────────────────────────────────────────────────────
+function renderActPanel(){
+  const d=gd(),e=ge();const grid=document.getElementById('actPanelGrid');grid.innerHTML='';
+  let found=false;
+  d.temas.filter(t=>t.habilitado).forEach(t=>{
+    (t.actividades||[]).forEach(a=>{
+      found=true;
+      const ok=d.alumnos.filter(al=>e[eK(al.nombre,t.id,a.id,'entregado')]).length;
+      const pend=d.alumnos.length-ok;
+      const card=document.createElement('div');card.className='act-panel-card';
+      card.innerHTML=`<div class="apc-tema">${escH(t.titulo)}</div><div class="apc-titulo">${escH(a.titulo||'Actividad')}</div><div class="apc-stats"><span class="apc-stat apc-ok">✓ ${ok} entregaron</span><span class="apc-stat apc-pend">⏳ ${pend} pendientes</span>${a.fechaEntrega?`<span class="apc-stat apc-fecha">📅 ${fmt(a.fechaEntrega)}</span>`:''}</div>`;
+      card.onclick=()=>openModalAct(t,a);
+      grid.appendChild(card);
+    });
+  });
+  if(!found)grid.innerHTML='<div style="color:var(--ix);font-family:\'Lora\',serif;font-style:italic;padding:2rem">No hay actividades cargadas todavía.</div>';
+}
+
+function openModalAct(t,a){
+  const d=gd(),e=ge();
+  document.getElementById('modalActName').textContent=`${t.titulo} — ${a.titulo||'Actividad'}`;
+  const rows=d.alumnos.map(al=>{
+    const done=e[eK(al.nombre,t.id,a.id,'entregado')];
+    const lnk=e[eK(al.nombre,t.id,a.id,'link')]||'';
+    return`<div class="actm-row"><span class="actm-name">${escH(al.nombre)}</span><span class="${done?'ast-badge ast-ok':'ast-badge ast-pend'}">${done?'✓ Entregó':'Pendiente'}</span>${lnk?`<a class="actm-link" href="${escH(lnk)}" target="_blank">Ver link ↗</a>`:''}</div>`;
+  }).join('');
+  document.getElementById('modalActBody').innerHTML=`<div class="modal-section"><h4>Estado de entregas</h4>${rows}</div>`;
+  document.getElementById('modalAct').classList.add('on');
+}
+function closeModalAct(){document.getElementById('modalAct').classList.remove('on');}
+
+// ── ALUMNOS ────────────────────────────────────────────────────────────────────
+function renderAlumnos(){
+  const d=gd(),e=ge();const grid=document.getElementById('aGrid');grid.innerHTML='';
+  d.alumnos.forEach(al=>{
+    const notas=d.notas[al.nombre]||{};
+    const narr=Object.values(notas).filter(n=>n!==null&&n!==undefined&&n!=='');
+    let totalActs=0,okActs=0;
+    d.temas.filter(t=>t.habilitado).forEach(t=>{
+      (t.actividades||[]).forEach(a=>{totalActs++;if(e[eK(al.nombre,t.id,a.id,'entregado')])okActs++;});
+    });
+    const card=document.createElement('div');card.className='acard';
+    card.innerHTML=`<div class="acard-name">${escH(al.nombre)}</div><div class="acard-stats"><span class="astat ok">${okActs}/${totalActs} entregas</span><span class="astat ${narr.length?'ok':''}">${narr.length} notas</span>${narr.length?`<span class="astat ok">Prom: ${(narr.reduce((a,b)=>a+parseFloat(b),0)/narr.length).toFixed(1)}</span>`:''}</div>`;
+    card.onclick=()=>openModalAl(al.nombre);
+    grid.appendChild(card);
+  });
+  const add=document.createElement('div');add.className='btn-add-a';add.innerHTML='+ Agregar alumno';add.onclick=addAlumno;
+  grid.appendChild(add);
+}
+
+function openModalAl(nombre){
+  const d=gd(),e=ge();
+  document.getElementById('modalName').textContent=nombre;
+  const notas=d.notas[nombre]||{};
+  const narr=Object.values(notas).filter(n=>n!==null&&n!==undefined&&n!=='');
+  const prom=narr.length?(narr.reduce((a,b)=>a+parseFloat(b),0)/narr.length).toFixed(1):'—';
+
+  // Actividades
+  let actsHTML='';
+  d.temas.filter(t=>t.habilitado).forEach(t=>{
+    (t.actividades||[]).forEach(a=>{
+      const done=e[eK(nombre,t.id,a.id,'entregado')];
+      const lnk=e[eK(nombre,t.id,a.id,'link')]||'';
+      const st=fst(a.fechaEntrega);
+      actsHTML+=`<div class="act-status-row"><span class="ast-icon">${done?'✅':'⏳'}</span><span class="ast-name">${escH(t.titulo)} — ${escH(a.titulo||'Actividad')}</span><span class="ast-fecha">${fmt(a.fechaEntrega)}</span><span class="ast-badge ${done?'ast-ok':st==='venc'?'ast-pend':'ast-sin'}">${done?'Entregó':st==='venc'?'Vencida':'Pendiente'}</span>${lnk?`<a class="ast-link" href="${escH(lnk)}" target="_blank">↗</a>`:''}</div>`;
+    });
+  });
+
+  // Boletín
+  const bolRows=d.temas.map(t=>{const n=notas[t.id];return`<div class="bol-row"><span class="bol-t">${escH(t.titulo)}</span><span class="bol-n ${!n?'sin':''}">${n||'—'}</span></div>`;}).join('');
+
+  // Obs
+  const obs=(d.observaciones[nombre]||'');
+
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-section"><h4>📋 Actividades</h4>${actsHTML||'<div style="color:var(--ix);font-size:0.83rem">Sin actividades cargadas.</div>'}</div>
+    <div class="modal-section"><h4>⭐ Boletín</h4>${bolRows}<div class="bol-prom"><span>Promedio</span><strong>${prom}</strong></div></div>
+    <div class="modal-section"><h4>📝 Observaciones (solo vos las ves)</h4><textarea class="obs-area" id="obsArea" placeholder="Notas sobre este alumno...">${escH(obs)}</textarea><br><button class="btn-save-obs" onclick="saveObs('${nombre}')">Guardar observación</button></div>`;
+
+  document.getElementById('modalAl').classList.add('on');
+}
+function closeModal(){document.getElementById('modalAl').classList.remove('on');}
+function saveObs(nombre){
+  const val=document.getElementById('obsArea').value;
+  const d=gd();if(!d.observaciones)d.observaciones={};
+  d.observaciones[nombre]=val;sd(d);toast('✓ Observación guardada');
+}
+function addAlumno(){
+  const n=prompt('Nombre completo del alumno:');if(!n||!n.trim())return;
+  const d=gd();d.alumnos.push({nombre:n.trim(),fechaAlta:new Date().toISOString()});sd(d);
+  toast('Alumno agregado');renderAlumnos();renderDash();
+}
+
+// ── CONFIG ─────────────────────────────────────────────────────────────────────
+function renderConfig(){
+  const d=gd();const c=d.config;
+  sv('cfgN',c.appNombre||'');sv('cfgS',c.subtitulo||'');
+  sv('cfgE1',c.e1Nombre||'');sv('cfgE2',c.e2Nombre||'');sv('cfgE3',c.e3Nombre||'');
+  sv('cfgL1T',c.e1LinkTeoricoLabel||'');sv('cfgL1V',c.e1LinkVideoLabel||'');
+}
+function saveConfig(){
+  const d=gd();
+  d.config.appNombre=v('cfgN');d.config.subtitulo=v('cfgS');
+  d.config.e1Nombre=v('cfgE1');d.config.e2Nombre=v('cfgE2');d.config.e3Nombre=v('cfgE3');
+  d.config.e1LinkTeoricoLabel=v('cfgL1T');d.config.e1LinkVideoLabel=v('cfgL1V');
+  sd(d);document.getElementById('aTit').textContent='📋 '+(d.config.appNombre||'Taller de Palabras');
+  renderTemas();toast('✓ Configuración guardada');
+}
+function savePw(){
+  const n=v('cfgPw1');const c=v('cfgPw2');
+  if(!n){toast('Escribí la nueva contraseña');return;}
+  if(n!==c){alert('Las contraseñas no coinciden.');return;}
+  localStorage.setItem(SKPW,n);toast('✓ Contraseña actualizada');
+  document.getElementById('cfgPw1').value='';document.getElementById('cfgPw2').value='';
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────────────
+function v(id){const el=document.getElementById(id);return el?el.value:'';}
+function sv(id,val){const el=document.getElementById(id);if(el)el.value=val;}
+let tT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2500);}
+</script>
+</body>
+</html>
